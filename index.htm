@@ -1,0 +1,1782 @@
+<html><head><base href="https://tower-defense.example.com/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jyter 0.4.8</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Press Start 2P', cursive;
+    background: linear-gradient(to bottom, #0c0c2c, #2c0c3c);
+    color: #00ff00;
+    overflow: hidden;
+  }
+  .fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    color: #00ff00;
+    z-index: 9999;
+    border: 4px solid #00ff00;
+  }
+  #loadingScreen {
+    background-color: #111;
+  }
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #00ff00;
+    border-top: 5px solid #ffff00;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  #lobby {
+    background-color: #0c0c2c;
+  }
+  #startGameButton {
+    font-size: 24px;
+    padding: 15px 30px;
+    margin-top: 30px;
+    cursor: pointer;
+    background-color: #00ff00;
+    color: #000;
+    border: 2px solid #ffff00;
+    text-shadow: 2px 2px #00ffff;
+    transition: all 0.3s ease;
+  }
+  #startGameButton:hover {
+    background-color: #ffff00;
+    box-shadow: 0 0 20px #00ffff;
+  }
+  #gameContainer {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  #gameCanvas {
+    border: 4px solid #00ff00;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+  }
+  #controls {
+    margin-top: 20px;
+  }
+  button {
+    font-size: 16px;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    background-color: #00ff00;
+    color: #000;
+    border: 2px solid #ffff00;
+    text-shadow: 2px 2px #00ffff;
+    transition: all 0.3s ease;
+  }
+  button:hover {
+    background-color: #ffff00;
+    box-shadow: 0 0 10px #00ffff;
+  }
+  #towerCards {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  .tower-card {
+    width: 120px;
+    height: 180px;
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+    border: 2px solid;
+    border-radius: 10px;
+    margin: 10px;
+    cursor: grab;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 255, 255, 0.1);
+    padding: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .tower-card.comum { border-color: white; }
+  .tower-card.raro { border-color: #3498db; }
+  .tower-card.epico { border-color: #9b59b6; }
+  .tower-card.mitico { border-color: #e74c3c; }
+  .tower-card.lendario { border-color: #f1c40f; }
+  .tower-card.incomum { border-color: #2ecc71; }
+  .tower-card-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffff00;
+    text-align: center;
+  }
+  .tower-card-rarity {
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .tower-card-rarity.comum { color: white; }
+  .tower-card-rarity.raro { color: #3498db; }
+  .tower-card-rarity.epico { color: #9b59b6; }
+  .tower-card-rarity.mitico { color: #e74c3c; }
+  .tower-card-rarity.lendario { color: #f1c40f; }
+  .tower-card-rarity.incomum { color: #2ecc71; }
+  .tower-card-cost {
+    font-size: 14px;
+    color: #ff00ff;
+  }
+  .tower-card-description {
+    font-size: 12px;
+    color: #00ffff;
+    text-align: center;
+    height: 60px;
+    overflow: hidden;
+  }
+  #backgroundCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+  .attribution {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    color: #00ff00;
+    font-size: 24px;
+    text-shadow: 2px 2px #ff00ff;
+    font-weight: bold;
+  }
+  .attribution .highlight {
+    font-size: 32px;
+    color: #ffff00;
+    text-shadow: 2px 2px #00ffff;
+  }
+  #pauseMenu {
+    display: none;
+    flex-direction: column;
+    z-index: 9998;
+  }
+  #gameOverScreen {
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+  }
+  #gameOverScreen h2 {
+    font-size: 48px;
+    color: #ff0000;
+    text-shadow: 2px 2px #000000;
+  }
+  #gameOverScreen p {
+    font-size: 24px;
+    color: #ffffff;
+    margin-bottom: 20px;
+  }
+  #restartGameButton {
+    font-size: 24px;
+    padding: 15px 30px;
+    cursor: pointer;
+    background-color: #00ff00;
+    color: #000000;
+    border: 2px solid #ffff00;
+    text-shadow: 2px 2px #00ffff;
+  }
+  #deckSelection {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  #towerList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 80%;
+    max-height: 70vh;
+    overflow-y: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 2px solid #00ff00;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+  <div id="loadingScreen" class="fullscreen">
+    <h1>Carregando Jyter 0.4.8...</h1>
+    <div class="spinner"></div>
+  </div>
+
+  <div id="lobby" class="fullscreen">
+    <h1>Jyter 0.4.8</h1>
+    <button id="startGameButton">Iniciar Jogo</button>
+  </div>
+
+  <div id="pauseMenu" class="fullscreen">
+    <h2>Jogo Pausado</h2>
+    <button id="resumeButton">Retomar</button>
+    <button id="restartButton">Reiniciar</button>
+  </div>
+
+  <div id="gameOverScreen" class="fullscreen" style="display: none;">
+    <h2>Game Over</h2>
+    <p>Você perdeu na onda <span id="finalWave"></span></p>
+    <button id="restartGameButton">Recomeçar</button>
+  </div>
+
+  <div id="gameContainer">
+    <canvas id="backgroundCanvas"></canvas>
+    <div id="waveInfo"></div>
+    <div id="resourceInfo"></div>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <div id="controls">
+      <button id="speedToggle">1x Velocidade</button>
+      <button id="backToDeckButton">Voltar ao Deck</button>
+      <button id="removeTowerButton" title="Remover Torre (Ctrl + Clique, custo: 20 ouro)">Remover Torre</button>
+    </div>
+    <div id="towerCards"></div>
+  </div>
+
+  <div id="upgradeModal">
+    <h2>Melhorar Torre</h2>
+    <div id="upgradeOptions"></div>
+    <button id="closeUpgradeModal">Fechar</button>
+  </div>
+
+  <div class="attribution">by <span class="highlight">calzsan & Jone Pikes</span></div>
+
+  <script>
+    const loadingScreen = document.getElementById('loadingScreen');
+    const lobby = document.getElementById('lobby');
+    const startGameButton = document.getElementById('startGameButton');
+    const gameContainer = document.getElementById('gameContainer');
+
+    let lives = 20;
+    let gold = 8000;
+    let maxTowers = 6;
+    let lastTowerIncrease = 0;
+
+    let availableTowers = [
+      { type: 'basic', name: 'Torre de Flechas', cost: 50, description: 'Alcance médio, tiro lento', rarity: 'comum' },
+      { type: 'rapid', name: 'Torre Metralha', cost: 170, description: 'Alcance médio, tiro super rápido', rarity: 'mitico' },
+      { type: 'sniper', name: 'Torre Sniper', cost: 250, description: 'Alcance super grande, tiro super lento', rarity: 'mitico' },
+      { type: 'ice', name: 'Torre de Gelo', cost: 180, description: 'Desacelera inimigos', rarity: 'raro' },
+      { type: 'cannon', name: 'Torre de Canhão', cost: 300, description: 'Alcance longo, elimina inimigos comuns', rarity: 'mitico' },
+      { type: 'area', name: 'Torre em Área', cost: 120, description: 'Dano significativo em área', rarity: 'epico' },
+      { type: 'chain', name: 'Torre de Corrente', cost: 150, description: 'Desacelera inimigos progressivamente', rarity: 'incomum' },
+      { type: 'bomb', name: 'Torre de Bombas', cost: 120, description: 'Explode inimigos 3 vezes', rarity: 'epico' },
+      { type: 'bazooka', name: 'Torre Hit Kill', cost: 160, description: 'vazio roxo lento mais letal', rarity: 'comum' },
+      { type: 'threeMages', name: 'Os Três Magos', cost: 150, description: 'Ataca com 3 projéteis em sequência', rarity: 'mitico' },
+      { type: 'teleport', name: 'Torre de Teletransporte', cost: 250, description: 'Teleporta inimigos para o início', rarity: 'lendario' },
+      { type: 'combat', name: 'Torre de Combate', cost: 250, description: 'Alcance curto, atira com duas mãos', rarity: 'epico' },
+      { type: 'mortar', name: 'Morteiro', cost: 300, description: 'Alcance hiper gigante, tiro lento, dano alto', rarity: 'epico' },
+      { type: 'tesla', name: 'Torre Tesla', cost: 250, description: 'Dano em área com raios de choque', rarity: 'epico' },
+      { type: 'superArrows', name: 'Torre de Super Flechas', cost: 170, description: '3 torres em uma, alcance médio', rarity: 'epico' },
+      { type: 'goldCollector', name: 'Coletor de Ouro', cost: 150, description: 'Coleta 2 moedas por segundo até 300', rarity: 'lendario' },
+      { type: 'multiShot', name: 'Torre Multitiro', cost: 200, description: 'Atira em vários alvos simultaneamente', rarity: 'raro' },
+      { type: 'seismic', name: 'Torre Sísmica', cost: 220, description: 'Causa dano em área e atordoa', rarity: 'epico' },
+      { type: 'repulsao', name: 'Torre de Repulsão', cost: 280, description: 'Empurra inimigos para o começo a cada 10 segundos, afeta 1 inimigo', rarity: 'lendario' },
+      { type: 'wheeled', name: 'Torre de Rodas', cost: 200, description: 'Torre móvel que atira em movimento', rarity: 'epico' },
+      { type: 'fragmentation', name: 'Torre de Fragmentação', cost: 250, description: 'Ao atingir um alvo, dispara fragmentos em várias direções', rarity: 'epico' },
+      { type: 'fire', name: 'Torre de Fogo', cost: 300, description: 'Dano em área, causando explosões em massa', rarity: 'epico' },
+      { type: 'poison', name: 'Torre Veneno', cost: 150, description: 'Dispara nuvens tóxicas que causam dano contínuo aos inimigos na área.', rarity: 'epico' }
+    ];
+
+    let spells = [
+      { type: 'tornado', name: 'Tornado', cost: 200, description: 'Prende inimigos por 3s, tira metade da vida', rarity: 'incomum' }
+    ];
+
+    let selectedDeck = [];
+    
+    function selectDeck() {
+      const deckSelectionContainer = document.createElement('div');
+      deckSelectionContainer.id = 'deckSelection';
+      deckSelectionContainer.innerHTML = '<h2>Selecione 8 torres para seu deck:</h2>';
+
+      const towerList = document.createElement('div');
+      towerList.id = 'towerList';
+
+      const allCards = [...availableTowers, ...spells];
+      allCards.forEach(card => {
+        const cardElement = document.createElement('div');
+        cardElement.className = `tower-card ${card.rarity}`;
+        cardElement.innerHTML = `
+          <div class="tower-card-name">${card.name}</div>
+          <div class="tower-card-rarity ${card.rarity}">${card.rarity.toUpperCase()}</div>
+          <div class="tower-card-cost"><span class="resource-icon gold-icon"></span> ${card.cost}</div>
+          <div class="tower-card-description">${card.description}</div>
+        `;
+        cardElement.addEventListener('click', () => {
+          if (selectedDeck.includes(card)) {
+            selectedDeck = selectedDeck.filter(t => t !== card);
+            cardElement.classList.remove('selected');
+          } else if (selectedDeck.length < 8) {
+            selectedDeck.push(card);
+            cardElement.classList.add('selected');
+          }
+          updateSelectedDeckDisplay();
+        });
+        towerList.appendChild(cardElement);
+      });
+
+      const totalCards = availableTowers.length + spells.length;
+      const cardsFoundInfo = document.createElement('div');
+      cardsFoundInfo.id = 'cardsFoundInfo';
+      cardsFoundInfo.textContent = `Cartas encontradas: ${totalCards}`;
+      cardsFoundInfo.style.marginTop = '20px';
+      cardsFoundInfo.style.fontSize = '18px';
+      cardsFoundInfo.style.color = '#00ff00';
+
+      const selectedDeckDisplay = document.createElement('div');
+      selectedDeckDisplay.id = 'selectedDeckDisplay';
+
+      const startGameButton = document.createElement('button');
+      startGameButton.textContent = 'Iniciar Jogo';
+      startGameButton.addEventListener('click', () => {
+        if (selectedDeck.length === 1) {
+          document.body.removeChild(deckSelectionContainer);
+          startGame();
+        } else {
+          alert('Por favor, selecione exatamente 8 torres para seu deck.');
+        }
+      });
+
+      deckSelectionContainer.appendChild(towerList);
+      deckSelectionContainer.appendChild(cardsFoundInfo);
+      deckSelectionContainer.appendChild(selectedDeckDisplay);
+      deckSelectionContainer.appendChild(startGameButton);
+
+      document.body.appendChild(deckSelectionContainer);
+
+      function updateSelectedDeckDisplay() {
+        selectedDeckDisplay.innerHTML = `<h3>Torres selecionadas (${selectedDeck.length}/1):</h3>`;
+        selectedDeck.forEach(card => {
+          const cardElement = document.createElement('div');
+          cardElement.textContent = card.name;
+          selectedDeckDisplay.appendChild(cardElement);
+        });
+      }
+    }
+
+    function startGame() {
+      clearInterval(gameLoop);
+      enemies = [];
+      towers = [];
+      projectiles = [];
+      gold = 8000;
+      crystals = 0;
+      lives = 20;
+      wave = 0;
+      generateWave();
+      createTowerCards();
+      gameContainer.style.display = 'flex';
+      gameLoop = setInterval(update, 1000 / 60);
+    }
+
+    function createTowerCards() {
+      const towerCardsContainer = document.getElementById('towerCards');
+      towerCardsContainer.innerHTML = '';
+
+      selectedDeck.forEach(card => {
+        const cardElement = document.createElement('div');
+        cardElement.className = `tower-card ${card.rarity}`;
+        cardElement.draggable = true;
+        cardElement.innerHTML = `
+          <div class="tower-card-name">${card.name}</div>
+          <div class="tower-card-rarity ${card.rarity}">${card.rarity.toUpperCase()}</div>
+          <div class="tower-card-cost"><span class="resource-icon gold-icon"></span> ${card.cost}</div>
+          <div class="tower-card-description">${card.description}</div>
+        `;
+        cardElement.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', card.type);
+        });
+        towerCardsContainer.appendChild(cardElement);
+      });
+    }
+
+    function backToDeckSelection() {
+      gameContainer.style.display = 'none';
+      clearInterval(gameLoop);
+      enemies = [];
+      towers = [];
+      projectiles = [];
+      gold = 300;
+      crystals = 0;
+      lives = 20;
+      wave = 0;
+      selectedDeck = [];
+      selectDeck();
+    }
+
+    setTimeout(() => {
+      loadingScreen.style.display = 'none';
+      lobby.style.display = 'flex';
+    }, 3000);
+
+    startGameButton.addEventListener('click', () => {
+      lobby.style.display = 'none';
+      selectDeck();
+    });
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const waveInfoElement = document.getElementById('waveInfo');
+    const resourceInfoElement = document.getElementById('resourceInfo');
+    const backgroundCanvas = document.getElementById('backgroundCanvas');
+    const bgCtx = backgroundCanvas.getContext('2d');
+    const upgradeModal = document.getElementById('upgradeModal');
+    const upgradeOptions = document.getElementById('upgradeOptions');
+    const closeUpgradeModal = document.getElementById('closeUpgradeModal');
+    const speedToggle = document.getElementById('speedToggle');
+    const pauseMenu = document.getElementById('pauseMenu');
+    const gameOverScreen = document.getElementById('gameOverScreen');
+    const finalWave = document.getElementById('finalWave');
+    const backToDeckButton = document.getElementById('backToDeckButton');
+    const removeTowerButton = document.getElementById('removeTowerButton');
+    let isPaused = false;
+    let isRemovingTower = false;
+
+    backgroundCanvas.width = window.innerWidth;
+    backgroundCanvas.height = window.innerHeight;
+
+    let gameLoop;
+    let enemies = [];
+    let towers = [];
+    let projectiles = [];
+    let crystals = 0;
+    let wave = 0;
+    let waveEnemies = [];
+    let enemiesSpawned = 0;
+    let selectedTowerType = null;
+    let selectedTower = null;
+    let gameSpeed = 1;
+
+    const enemyPath = [
+      { x: 0, y: 200 },
+      { x: 200, y: 200 },
+      { x: 200, y: 100 },
+      { x: 600, y: 100 },
+      { x: 600, y: 300 },
+      { x: 800, y: 300 }
+    ];
+
+    function drawBackground() {
+      const gradient = bgCtx.createLinearGradient(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+      gradient.addColorStop(0, '#0c0c2c');
+      gradient.addColorStop(1, '#2c0c3c');
+      bgCtx.fillStyle = gradient;
+      bgCtx.fillRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+
+      for (let i = 0; i < 50; i++) {
+        bgCtx.beginPath();
+        bgCtx.arc(
+          Math.random() * backgroundCanvas.width,
+          Math.random() * backgroundCanvas.height,
+          Math.random() * 50,
+          0,
+          Math.PI * 2
+        );
+        bgCtx.fillStyle = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.1)`;
+        bgCtx.fill();
+      }
+
+      for (let i = 0; i < 20; i++) {
+        bgCtx.beginPath();
+        bgCtx.moveTo(Math.random() * backgroundCanvas.width, Math.random() * backgroundCanvas.height);
+        bgCtx.lineTo(Math.random() * backgroundCanvas.width, Math.random() * backgroundCanvas.height);
+        bgCtx.strokeStyle = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.2)`;
+        bgCtx.lineWidth = Math.random() * 3;
+        bgCtx.stroke();
+      }
+    }
+
+    drawBackground();
+
+    class Enemy {
+      constructor(type, wave) {
+        this.x = enemyPath[0].x;
+        this.y = enemyPath[0].y;
+        this.pathIndex = 0;
+        this.type = type;
+        this.wave = wave;
+        this.animationFrame = 0;
+        this.animationSpeed = 0.1;
+        this.damage = 1;
+        this.attackCooldown = 60;
+        this.attackCooldownRemaining = 0;
+        this.attackCount = 0;
+        this.goldReward = 10;
+        this.slowed = false;
+        this.slowDuration = 0;
+        this.stunned = false;
+        this.stunnedDuration = 0;
+
+        const baseDifficulty = 1 + (wave * 0.1);
+
+        switch (type) {
+          case 'normal':
+            this.speed = 1 * baseDifficulty;
+            this.maxHealth = 100 * baseDifficulty;
+            this.size = 30;
+            this.color = '#ff5555';
+            break;
+          case 'fast':
+            this.speed = 2 * baseDifficulty;
+            this.maxHealth = 50 * baseDifficulty;
+            this.size = 24;
+            this.color = '#ffff55';
+            break;
+          case 'tank':
+            this.speed = 0.5 * baseDifficulty;
+            this.maxHealth = 200 * baseDifficulty;
+            this.size = 40;
+            this.color = '#aa55ff';
+            break;
+          case 'boss':
+            this.speed = 0.3 * baseDifficulty;
+            this.maxHealth = 2000 * baseDifficulty;
+            this.size = 180;
+            this.color = '#ff55ff';
+            this.damage = 1;
+            this.attackCooldown = 60;
+            this.attackCount = 0;
+            break;
+        }
+
+        this.health = this.maxHealth;
+      }
+
+      move() {
+        if (this.stunned) {
+          this.stunnedDuration--;
+          if (this.stunnedDuration <= 0) {
+            this.stunned = false;
+          }
+          return false;
+        }
+
+        const target = enemyPath[this.pathIndex];
+        const dx = target.x - this.x;
+        const dy = target.y - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < this.speed) {
+          this.pathIndex++;
+          if (this.pathIndex >= enemyPath.length) {
+            lives--;
+            if (lives <= 0) {
+              endGame();
+            }
+            return true;
+          }
+        } else {
+          const moveSpeed = this.slowed ? this.speed * 0.5 : this.speed;
+          this.x += (dx / distance) * moveSpeed;
+          this.y += (dy / distance) * moveSpeed;
+        }
+
+        this.animationFrame += this.animationSpeed;
+        if (this.animationFrame >= 4) {
+          this.animationFrame = 0;
+        }
+
+        if (this.health <= 0) {
+          if (this.type === 'boss') {
+            gold += 500;
+            updateResourceInfo();
+          }
+          return true;
+        }
+
+        return false;
+      }
+
+      attack(towers) {
+        if (this.type === 'boss' && this.attackCooldownRemaining <= 0) {
+          for (let tower of towers) {
+            const dx = tower.x - this.x;
+            const dy = tower.y - this.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance <= 50) {
+              tower.takeDamage(this.damage);
+              this.attackCount++;
+              if (this.attackCount >= 5) {
+                tower.health = 0;
+                this.attackCount = 0;
+              }
+              this.attackCooldownRemaining = this.attackCooldown;
+              break;
+            }
+          }
+        }
+        if (this.attackCooldownRemaining > 0) {
+          this.attackCooldownRemaining--;
+        }
+      }
+
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size / 2 + 2, 0, Math.PI * 2);
+        ctx.stroke();
+
+        for (let i = 0; i < 3; i++) {
+          ctx.beginPath();
+          ctx.arc(
+            this.x + Math.cos(this.animationFrame + i * Math.PI * 2 / 3) * this.size / 3,
+            this.y + Math.sin(this.animationFrame + i * Math.PI * 2 / 3) * this.size / 3,
+            this.size / 10,
+            0,
+            Math.PI * 2
+          );
+          ctx.fillStyle = '#ffffff';
+          ctx.fill();
+        }
+
+        const healthBarWidth = 30;
+        const healthBarHeight = 5;
+        const healthPercentage = this.health / this.maxHealth;
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(this.x - healthBarWidth / 2, this.y - this.size / 2 - 10, healthBarWidth, healthBarHeight);
+
+        ctx.fillStyle = '#00ff00';
+        ctx.fillRect(this.x - healthBarWidth / 2, this.y - this.size / 2 - 10, healthBarWidth * healthPercentage, healthBarHeight);
+      }
+    }
+
+    function endGame() {
+      clearInterval(gameLoop);
+      gameOverScreen.style.display = 'flex';
+      finalWave.textContent = wave;
+    }
+
+    class Tower {
+      constructor(x, y, type) {
+        this.x = x;
+        this.y = y;
+        this.type = type;
+        this.level = 1;
+        this.health = 100;
+        this.rotation = 0;
+        this.goldCollected = 0;
+        this.isCloned = false;
+        this.pulsePhase = 0;
+        this.moveSpeed = 0;
+        this.moveDirection = 0;
+        this.originalX = x;
+        this.originalY = y;
+        this.targetEnemy = null;
+        this.updateStats();
+      }
+
+      updateStats() {
+        switch (this.type) {
+          case 'basic':
+            this.range = 120;
+            this.damage = 10;
+            this.cooldown = 60;
+            this.cost = 50;
+            this.color = '#5555ff';
+            break;
+          case 'rapid':
+            this.range = 180;
+            this.damage = 1.5;
+            this.cooldown = 5;
+            this.cost = 170;
+            this.color = '#ff55aa';
+            break;
+          case 'sniper':
+            this.range = 250;
+            this.damage = 33.33;
+            this.cooldown = 120;
+            this.cost = 250;
+            this.color = '#800080';
+            break;
+          case 'ice':
+            this.range = 120;
+            this.damage = 1;
+            this.cooldown = 30;
+            this.cost = 180;
+            this.slowFactor = 0.5;
+            this.slowDuration = 180;
+            break;
+          case 'laser':
+            this.range = 80;
+            this.damage = 2;
+            this.cooldown = 1;
+            this.cost = 360;
+            this.color = '#FF0000';
+            break;
+          case 'cannon':
+            this.range = 200;
+            this.damage = 60;
+            this.cooldown = 180;
+            this.cost = 300;
+            this.color = '#B22222';
+            break;
+          case 'area':
+            this.range = 120;
+            this.damage = 20 / 3;
+            this.cooldown = 30;
+            this.cost = 120;
+            this.color = '#4CAF50';
+            break;
+          case 'chain':
+            this.range = 180;
+            this.damage = 0;
+            this.cooldown = 30;
+            this.cost = 150;
+            this.color = '#808080';
+            break;
+          case 'bomb':
+            this.range = 150;
+            this.damage = 15;
+            this.cooldown = 180;
+            this.cost = 120;
+            this.color = '#FF4500';
+            break;
+          case 'bazooka':
+            this.range = 60;
+            this.damage = 1000;
+            this.cooldown = 1000;
+            this.cost = 160;
+            this.color = '#8B0000';
+            break;
+          case 'threeMages':
+            this.range = 150;
+            this.damage = 7.5;
+            this.cooldown = 90;
+            this.cost = 150;
+            this.color = '#8A2BE2';
+            this.mageIndex = 0;
+            break;
+          case 'teleport':
+            this.range = 150;
+            this.damage = 0;
+            this.cooldown = 420; // 7 seconds * 60 FPS
+            this.cost = 250;
+            this.color = '#9932CC';
+            break;
+          case 'combat':
+            this.range = 100;
+            this.damage = 15;
+            this.cooldown = 120;
+            this.cost = 250;
+            this.color = '#FF6347';
+            break;
+          case 'mortar':
+            this.range = 300;
+            this.damage = 33;
+            this.cooldown = 180;
+            this.cost = 300;
+            this.color = '#8B4513';
+            break;
+          case 'tesla':
+            this.range = 100;
+            this.damage = 15;
+            this.cooldown = 120;
+            this.cost = 250;
+            this.color = '#4169E1';
+            break;
+          case 'superArrows':
+            this.range = 150;
+            this.damage = 20;
+            this.cooldown = 270;
+            this.cost = 170;
+            this.subTowers = [
+              { x: this.x - 20, y: this.y - 20 },
+              { x: this.x + 20, y: this.y - 20 },
+              { x: this.x, y: this.y + 20 }
+            ];
+            break;
+          case 'clone':
+            this.range = 0;
+            this.damage = 0;
+            this.cooldown = 0;
+            this.cost = 250;
+            this.color = '#FF1493';
+            break;
+          case 'goldCollector':
+            this.range = 0;
+            this.damage = 0;
+            this.cooldown = 60;
+            this.cost = 150;
+            this.color = '#FFD700';
+            break;
+          case 'multiShot':
+            this.range = 170;
+            this.damage = 2.5;
+            this.cooldown = 20;
+            this.cost = 200;
+            this.color = '#8B008B';
+            break;
+          case 'seismic':
+            this.range = 100;
+            this.damage = 10;
+            this.cooldown = 90;
+            this.cost = 220;
+            this.color = '#8B4513';
+            this.stunDuration = 60;
+            break;
+          case 'repulsao':
+            this.range = 150;
+            this.damage = 0;
+            this.cooldown = 600;
+            this.cost = 280;
+            this.color = '#FF1493';
+            break;
+          case 'wheeled':
+            this.range = 150;
+            this.damage = 15;
+            this.cooldown = 60;
+            this.cost = 200;
+            this.color = '#4B0082';
+            this.moveSpeed = 5; 
+            this.targetEnemy = null;
+            break;
+          case 'fragmentation':
+            this.range = 150;
+            this.damage = 20;
+            this.cooldown = 90;
+            this.cost = 250;
+            this.color = '#8B008B';
+            break;
+          case 'fire':
+            this.range = 140;
+            this.damage = 30;
+            this.cooldown = 120;
+            this.cost = 300;
+            this.color = '#FF4500';
+            break;
+          case 'poison':
+            this.range = 100;
+            this.damage = 0.;
+            this.cooldown = 2;
+            this.cost = 150;
+            this.color = '#8B008B';
+            break;
+        }
+        this.cooldownRemaining = 0;
+      }
+
+      takeDamage(damage) {
+        this.health -= damage;
+        if (this.health <= 0) {
+          return true;
+        }
+        return false;
+      }
+
+      attack(enemies) {
+        if (this.cooldownRemaining > 0) {
+          this.cooldownRemaining--;
+          return false;
+        }
+
+        if (this.type === 'goldCollector') {
+          this.cooldownRemaining = this.cooldown;
+          this.goldCollected += 2;
+          gold += 2;
+          updateResourceInfo();
+
+          if (this.goldCollected >= 300) {
+            return 'remove';
+          }
+          return true;
+        }
+
+        if (this.type === 'combat') {
+          let targets = enemies.filter(enemy => {
+            const dx = enemy.x - this.x;
+            const dy = enemy.y - this.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            return distance <= this.range;
+          }).slice(0, 2);
+
+          targets.forEach(target => {
+            projectiles.push(new Projectile(this.x, this.y, target, this.damage, this.type));
+          });
+          this.cooldownRemaining = this.cooldown;
+          return true;
+        }
+
+        let targetEnemy = null;
+        let closestDistance = Infinity;
+
+        for (let enemy of enemies) {
+          const dx = enemy.x - this.x;
+          const dy = enemy.y - this.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance <= this.range && distance < closestDistance) {
+            targetEnemy = enemy;
+            closestDistance = distance;
+          }
+        }
+
+        if (targetEnemy) {
+          this.cooldownRemaining = this.cooldown;
+          this.rotation = Math.atan2(targetEnemy.y - this.y, targetEnemy.x - this.x);
+
+          switch (this.type) {
+            case 'basic':
+            case 'rapid':
+            case 'sniper':
+            case 'cannon':
+            case 'area':
+            case 'bomb':
+            case 'bazooka':
+            case 'teleport':
+              projectiles.push(new Projectile(this.x, this.y, targetEnemy, this.damage, this.type));
+              break;
+            case 'threeMages':
+              const angle = (this.mageIndex * 2 * Math.PI / 3);
+              const mageX = this.x + Math.cos(angle) * 15;
+              const mageY = this.y + Math.sin(angle) * 15;
+              projectiles.push(new Projectile(mageX, mageY, targetEnemy, this.damage, this.type));
+              this.mageIndex = (this.mageIndex + 1) % 3;
+              this.cooldownRemaining = this.cooldown / 3;
+              break;
+            case 'ice':
+              targetEnemy.slowed = true;
+              targetEnemy.slowFactor = this.slowFactor;
+              targetEnemy.slowDuration = this.slowDuration;
+              break;
+            case 'tesla':
+              for (let enemy of enemies) {
+                const dx = enemy.x - this.x;
+                const dy = enemy.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance <= this.range) {
+                  enemy.health -= this.damage;
+                  ctx.beginPath();
+                  ctx.moveTo(this.x, this.y);
+
+                  const segments = 5;
+                  for (let i = 1; i <= segments; i++) {
+                    const t = i / segments;
+                    const x = this.x + dx * t + (Math.random() - 0.5) * 20;
+                    const y = this.y + dy * t + (Math.random() - 0.5) * 20;
+                    ctx.lineTo(x, y);
+                  }
+
+                  ctx.lineTo(enemy.x, enemy.y);
+                  ctx.strokeStyle = '#4169E1';
+                  ctx.lineWidth = 2;
+                  ctx.stroke();
+
+                  ctx.shadowColor = '#4169E1';
+                  ctx.shadowBlur = 10;
+                  ctx.stroke();
+                  ctx.shadowBlur = 0;
+                }
+              }
+              break;
+            case 'chain':
+              targetEnemy.speed *= 0.9;
+              targetEnemy.health -= this.damage;
+              ctx.beginPath();
+              ctx.moveTo(this.x, this.y);
+              ctx.lineTo(targetEnemy.x, targetEnemy.y);
+              ctx.strokeStyle = '#808080';
+              ctx.lineWidth = 2;
+              ctx.setLineDash([5, 3]);
+              ctx.stroke();
+              ctx.setLineDash([]);
+              break;
+            case 'superArrows':
+              this.subTowers.forEach(subTower => {
+                const subTargetEnemy = enemies.find(enemy => {
+                  const dx = enemy.x - subTower.x;
+                  const dy = enemy.y - subTower.y;
+                  const distance = Math.sqrt(dx * dx + dy * dy);
+                  return distance <= this.range;
+                });
+                if (subTargetEnemy) {
+                  projectiles.push(new Projectile(subTower.x, subTower.y, subTargetEnemy, this.damage, this.type));
+                }
+              });
+              break;
+            case 'mortar':
+              projectiles.push(new Projectile(this.x, this.y, targetEnemy, this.damage, this.type));
+              break;
+            case 'multiShot':
+              let targets = enemies.filter(enemy => {
+                const dx = enemy.x - this.x;
+                const dy = enemy.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                return distance <= this.range;
+              }).slice(0, 3);
+
+              targets.forEach(target => {
+                projectiles.push(new Projectile(this.x, this.y, target, this.damage, this.type));
+              });
+              break;
+            case 'seismic':
+              let stunned = false;
+              for (let enemy of enemies) {
+                const dx = enemy.x - this.x;
+                const dy = enemy.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance <= this.range) {
+                  enemy.health -= this.damage;
+                  if (!stunned) {
+                    enemy.stunned = true;
+                    enemy.stunnedDuration = this.stunDuration;
+                    stunned = true;
+                  }
+                }
+              }
+              break;
+            case 'repulsao':
+              for (let enemy of enemies) {
+                const dx = enemy.x - this.x;
+                const dy = enemy.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance <= this.range) {
+                  enemy.pathIndex = Math.max(0, enemy.pathIndex - 1);
+                  const targetPoint = enemyPath[enemy.pathIndex];
+                  enemy.x += (targetPoint.x - enemy.x) * 0.2; 
+                  enemy.y += (targetPoint.y - enemy.y) * 0.2;
+                  break; 
+                }
+              }
+              break;
+            case 'wheeled':
+              if (this.targetEnemy && this.targetEnemy.health <= 0) {
+                this.targetEnemy = null;
+              }
+              if (!this.targetEnemy) {
+                this.targetEnemy = enemies.find(enemy => {
+                  const dx = enemy.x - this.x;
+                  const dy = enemy.y - this.y;
+                  return Math.sqrt(dx * dx + dy * dy) <= this.range;
+                });
+              }
+              if (this.targetEnemy) {
+                const dx = this.targetEnemy.x - this.x;
+                const dy = this.targetEnemy.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance > 5) {
+                  this.x += (dx / distance) * this.moveSpeed;
+                  this.y += (dy / distance) * this.moveSpeed;
+                }
+                projectiles.push(new Projectile(this.x, this.y, this.targetEnemy, this.damage, this.type));
+              } else {
+                const dx = this.originalX - this.x;
+                const dy = this.originalY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance > 5) {
+                  this.x += (dx / distance) * this.moveSpeed;
+                  this.y += (dy / distance) * this.moveSpeed;
+                }
+              }
+              break;
+            case 'fragmentation':
+              projectiles.push(new Projectile(this.x, this.y, targetEnemy, this.damage, this.type));
+              break;
+            case 'fire':
+              projectiles.push(new Projectile(this.x, this.y, targetEnemy, this.damage, this.type));
+              break;
+            case 'poison':
+              for (let enemy of enemies) {
+                const dx = enemy.x - this.x;
+                const dy = enemy.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance <= this.range) {
+                  enemy.health -= this.damage;
+                }
+              }
+              break;
+          }
+          return true;
+        }
+
+        return false;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.range, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.stroke();
+
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 20, 0, Math.PI * 2);
+        ctx.fill();
+
+        switch(this.type) {
+          case 'superArrows':
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 20, 0, Math.PI * 2);
+            ctx.fill();
+            this.subTowers.forEach(subTower => {
+              ctx.beginPath();
+              ctx.arc(subTower.x, subTower.y, 10, 0, Math.PI * 2);
+              ctx.fillStyle = '#FFD700';
+              ctx.fill();
+              ctx.strokeStyle = '#000000';
+              ctx.lineWidth = 2;
+              ctx.stroke();
+            });
+            break;
+          case 'threeMages':
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 20, 0, Math.PI * 2);
+            ctx.fill();
+            for (let i = 0; i < 3; i++) {
+              const angle = (i * 2 * Math.PI / 3) + (this.mageIndex * 2 * Math.PI / 3);
+              const mageX = this.x + Math.cos(angle) * 15;
+              const mageY = this.y + Math.sin(angle) * 15;
+              ctx.beginPath();
+              ctx.arc(mageX, mageY, 8, 0, Math.PI * 2);
+              ctx.fillStyle = ['#FF4500', '#4169E1', '#32CD32'][i];
+              ctx.fill();
+            }
+            break;
+          case 'fragmentation':
+            drawFragmentationDetails(this.x, this.y);
+            break;
+          case 'fire':
+            drawFireDetails(this.x, this.y);
+            break;
+        }
+
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.fillStyle = '#333333';
+        ctx.fillRect(0, -4, 25, 8);
+        ctx.restore();
+
+        if (this.isCloned) {
+          this.pulsePhase += 0.1;
+          const pulseFactor = Math.sin(this.pulsePhase) * 0.2 + 0.8;
+          ctx.strokeStyle = `rgba(0, 255, 255, ${pulseFactor})`;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, 22, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+    }
+
+    function drawFragmentationDetails(x, y) {
+      ctx.beginPath();
+      ctx.arc(x, y, 15, 0, Math.PI * 2);
+      ctx.fillStyle = '#8B008B';
+      ctx.fill();
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let i = 0; i < 8; i++) {
+        const angle = i * Math.PI / 4;
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + Math.cos(angle) * 20, y + Math.sin(angle) * 20);
+      }
+      ctx.stroke();
+    }
+
+    function drawFireDetails(x, y) {
+      ctx.beginPath();
+      ctx.arc(x, y, 15, 0, Math.PI * 2);
+      ctx.fillStyle = '#FF4500';
+      ctx.fill();
+      const flameHeight = 10 + Math.sin(Date.now() / 200) * 5;
+      ctx.beginPath();
+      ctx.moveTo(x - 10, y - 10);
+      ctx.quadraticCurveTo(x - 5, y - 20 - flameHeight, x, y - 10);
+      ctx.quadraticCurveTo(x + 5, y - 20 - flameHeight, x + 10, y - 10);
+      ctx.fillStyle = '#FFFF00';
+      ctx.fill();
+    }
+
+    class Projectile {
+      constructor(x, y, target, damage, type, speed = 5) {
+        this.x = x;
+        this.y = y;
+        this.target = target;
+        this.damage = damage;
+        this.type = type;
+        this.speed = speed;
+        this.explosionCount = type === 'bomb' ? 3 : 0;
+        this.isMortarStone = type === 'mortar';
+      }
+
+      move() {
+        const dx = this.target.x - this.x;
+        const dy = this.target.y - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < this.speed) {
+          switch (this.type) {
+            case 'teleport':
+              this.target.x = enemyPath[0].x;
+              this.target.y = enemyPath[0].y;
+              this.target.pathIndex = 0;
+              break;
+            case 'area':
+              for (let enemy of enemies) {
+                const enemyDx = enemy.x - this.target.x;
+                const enemyDy = enemy.y - this.target.y;
+                const enemyDistance = Math.sqrt(enemyDx * enemyDx + enemyDy * enemyDy);
+                if (enemyDistance <= 50) {
+                  enemy.health -= this.damage;
+                }
+              }
+              break;
+            case 'bomb':
+              if (this.explosionCount > 0) {
+                this.explosionCount--;
+                for (let enemy of enemies) {
+                  const enemyDx = enemy.x - this.target.x;
+                  const enemyDy = enemy.y - this.target.y;
+                  const enemyDistance = Math.sqrt(enemyDx * enemyDx + enemyDy * enemyDy);
+                  if (enemyDistance <= 30) {
+                    enemy.health -= this.damage;
+                  }
+                }
+                return false;
+              }
+              break;
+            case 'fragmentation':
+              this.target.health -= this.damage;
+              for (let i = 0; i < 6; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const fragment = new Projectile(this.target.x, this.target.y, {x: this.target.x + Math.cos(angle) * 50, y: this.target.y + Math.sin(angle) * 50}, this.damage / 3, 'fragment');
+                fragment.speed = 3;
+                projectiles.push(fragment);
+              }
+              break;
+            case 'fire':
+              for (let enemy of enemies) {
+                const dx = enemy.x - this.target.x;
+                const dy = enemy.y - this.target.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance <= 50) {
+                  enemy.health -= this.damage;
+                }
+              }
+              break;
+            case 'fragment':
+              break;
+            default:
+              this.target.health -= this.damage;
+              break;
+          }
+
+          if (this.target.health <= 0) {
+            gold += 10;
+            updateResourceInfo();
+          }
+          return true;
+        }
+
+        this.x += (dx / distance) * this.speed;
+        this.y += (dy / distance) * this.speed;
+        return false;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(Math.atan2(this.target.y - this.y, this.target.x - this.x));
+
+        switch (this.type) {
+          case 'bomb':
+            ctx.fillStyle = '#FF4500';
+            ctx.beginPath();
+            ctx.arc(0, 0, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#FFA500';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(0, -8);
+            ctx.lineTo(5, -13);
+            ctx.lineTo(8, -10);
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            break;
+          case 'bazooka':
+            ctx.fillStyle = '#8B0000';
+            ctx.beginPath();
+            ctx.moveTo(-8, -4);
+            ctx.lineTo(8, 0);
+            ctx.lineTo(-8, 4);
+            ctx.closePath();
+            ctx.fill();
+            break;
+          case 'threeMages':
+            ctx.fillStyle = ['#FF4500', '#4169E1', '#32CD32'][this.mageIndex % 3];
+            ctx.beginPath();
+            ctx.arc(0, 0, 4, 0, Math.PI * 2);
+            ctx.fill();
+            break;
+          case 'teleport':
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(0, 0, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#9932CC';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            break;
+          case 'combat':
+            ctx.fillStyle = '#FF6347';
+            ctx.beginPath();
+            ctx.moveTo(-5, -5);
+            ctx.lineTo(5, 0);
+            ctx.lineTo(-5, 5);
+            ctx.closePath();
+            ctx.fill();
+            break;
+          case 'mortar':
+            ctx.fillStyle = '#8B4513';
+            ctx.beginPath();
+            ctx.arc(0, 0, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#A0522D';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            break;
+          case 'fragmentation':
+            ctx.fillStyle = '#8B008B';
+            ctx.beginPath();
+            ctx.arc(0, 0, 6, 0, Math.PI * 2);
+            ctx.fill();
+            break;
+          case 'fire':
+            ctx.fillStyle = '#FF4500';
+            ctx.beginPath();
+            ctx.arc(0, 0, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#FFFF00';
+            ctx.beginPath();
+            ctx.moveTo(-6, -6);
+            ctx.lineTo(0, -12);
+            ctx.lineTo(6, -6);
+            ctx.closePath();
+            ctx.fill();
+            break;
+          default:
+            ctx.fillStyle = this.getProjectileColor();
+            ctx.beginPath();
+            ctx.arc(0, 0, this.getProjectileSize(), 0, Math.PI * 2);
+            ctx.fill();
+            break;
+        }
+
+        ctx.restore();
+      }
+
+      getProjectileColor() {
+        switch (this.type) {
+          case 'bomb': return '#FF4500';
+          case 'bazooka': return '#8B0000';
+          case 'threeMages': return '#8A2BE2';
+          case 'teleport': return '#FFFFFF';
+          case 'combat': return '#FF6347';
+          case 'mortar': return '#8B4513';
+          default: return '#ffffff';
+        }
+      }
+
+      getProjectileSize() {
+        switch (this.type) {
+          case 'bomb': return 6;
+          case 'bazooka': return 8;
+          case 'threeMages': return 4;
+          case 'teleport': return 5;
+          case 'combat': return 5;
+          case 'mortar': return 8;
+          default: return 3;
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      createTowerCards();
+      gameContainer.style.display = 'none';
+      updateResourceInfo();
+    });
+
+    canvas.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+
+    canvas.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cardType = e.dataTransfer.getData('text');
+
+      const card = [...availableTowers, ...spells].find(c => c.type === cardType);
+
+      if (card && gold >= card.cost) {
+        if (card.type === 'tornado') {
+          castTornado(x, y);
+          gold -= card.cost;
+          updateResourceInfo();
+        } else {
+          if (towers.length >= maxTowers) {
+            alert(`Você atingiu o limite máximo de ${maxTowers} torres!`);
+          } else {
+            towers.push(new Tower(x, y, card.type));
+            gold -= getTowerCost(card.type);
+            updateResourceInfo();
+          }
+        }
+      } else {
+        alert('Ouro insuficiente para usar este card!');
+      }
+    });
+
+    function castTornado(x, y) {
+      const tornadoRadius = 100;
+      const tornadoDuration = 180; // 3 seconds at 60 FPS
+      let remainingDuration = tornadoDuration;
+
+      function updateTornado() {
+        if (remainingDuration <= 0) return;
+
+        ctx.beginPath();
+        ctx.arc(x, y, tornadoRadius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(100, 100, 255, 0.3)';
+        ctx.fill();
+
+        enemies.forEach(enemy => {
+          const dx = enemy.x - x;
+          const dy = enemy.y - y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance <= tornadoRadius) {
+            if (enemy.type !== 'boss') {
+              enemy.x += (x - enemy.x) * 0.1;
+              enemy.y += (y - enemy.y) * 0.1;
+              if (remainingDuration === tornadoDuration) {
+                enemy.health *= 0.5;
+              }
+            }
+          }
+        });
+
+        remainingDuration--;
+        if (remainingDuration > 0) {
+          requestAnimationFrame(updateTornado);
+        }
+      }
+
+      updateTornado();
+    }
+
+    function generateWave() {
+      wave++;
+      const bossWave = wave % 10 === 0;
+      const enemiesPerWave = Math.floor((wave - 1) / 3) + 1;
+
+      waveEnemies = [];
+      if (bossWave) {
+        waveEnemies.push(new Enemy('boss', wave));
+      } else {
+        for (let i = 0; i < enemiesPerWave; i++) {
+          const randomValue = Math.random();
+          let enemyType;
+          if (randomValue < 0.6) {
+            enemyType = 'normal';
+          } else if (randomValue < 0.9) {
+            enemyType = 'fast';
+          } else {
+            enemyType = 'tank';
+          }
+          waveEnemies.push(new Enemy(enemyType, wave));
+        }
+      }
+
+      enemiesSpawned = 0;
+      updateWaveInfo();
+    }
+
+    function updateWaveInfo() {
+      waveInfoElement.textContent = `Onda: ${wave} | Inimigos: ${enemiesSpawned}/${waveEnemies.length} | Vidas: ${lives}`;
+    }
+
+    function updateResourceInfo() {
+      resourceInfoElement.innerHTML = `
+        <span class="resource-icon gold-icon"></span> ${gold} 
+        <span class="resource-icon crystal-icon"></span> ${crystals}
+        | Vidas: ${lives}
+      `;
+    }
+
+    function spawnEnemy() {
+      if (enemiesSpawned < waveEnemies.length) {
+        if (Math.random() < 0.05) {
+          enemies.push(waveEnemies[enemiesSpawned]);
+          enemiesSpawned++;
+          updateWaveInfo();
+        }
+      } else if (enemies.length === 0) {
+        generateWave();
+        const waveBonus = Math.floor((100 + Math.floor(wave * 20)) / 3);
+        gold += waveBonus;
+        if (wave % 5 === 0) {
+          crystals += Math.floor(wave / 5);
+        }
+      }
+    }
+
+    function drawPath() {
+      ctx.strokeStyle = '#aa5500';
+      ctx.lineWidth = 30;
+      ctx.beginPath();
+      ctx.moveTo(enemyPath[0].x, enemyPath[0].y);
+      for (let i = 1; i < enemyPath.length; i++) {
+        ctx.lineTo(enemyPath[i].x, enemyPath[i].y);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = '#cc7700';
+      ctx.lineWidth = 2;
+      for (let i = 0; i < enemyPath.length - 1; i++) {
+        const startX = enemyPath[i].x;
+        const startY = enemyPath[i].y;
+        const endX = enemyPath[i + 1].x;
+        const endY = enemyPath[i + 1].y;
+        for (let j = 0; j < 10; j++) {
+          const x1 = startX + (endX - startX) * (j / 10) + (Math.random() - 0.5) * 20;
+          const y1 = startY + (endY - startY) * (j / 10) + (Math.random() - 0.5) * 20;
+          const x2 = startX + (endX - startX) * ((j + 1) / 10) + (Math.random() - 0.5) * 20;
+          const y2 = startY + (endY - startY) * ((j + 1) / 10) + (Math.random() - 0.5) * 20;
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+        }
+      }
+    }
+
+    function update() {
+      if (!isPaused) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        drawPath();
+        
+        for (let i = 0; i < gameSpeed; i++) {
+          spawnEnemy();
+
+          enemies = enemies.filter(enemy => {
+            enemy.move();
+            enemy.attack(towers);
+            return enemy.health > 0 && enemy.pathIndex < enemyPath.length;
+          });
+
+          towers = towers.filter(tower => {
+            const result = tower.attack(enemies);
+            if (result === 'remove') {
+              return false;
+            }
+            return true;
+          });
+
+          towers.forEach(tower => {
+            tower.attack(enemies);
+          });
+
+          projectiles = projectiles.filter(projectile => {
+            return !projectile.move();
+          });
+
+          // Check if we need to increase max towers
+          if (wave - lastTowerIncrease >= 10) {
+            maxTowers++;
+            lastTowerIncrease = wave;
+          }
+
+          if (enemies.length === 0 && enemiesSpawned >= waveEnemies.length) {
+            generateWave();
+          }
+        }
+
+        enemies.forEach(enemy => enemy.draw());
+        towers.forEach(tower => tower.draw());
+        projectiles.forEach(projectile => projectile.draw());
+
+        updateResourceInfo();
+        updateWaveInfo();
+      }
+    }
+
+    function togglePause() {
+      isPaused = !isPaused;
+      if (isPaused) {
+        clearInterval(gameLoop);
+        pauseMenu.style.display = 'flex';
+      } else {
+        pauseMenu.style.display = 'none';
+        gameLoop = setInterval(update, 1000 / 60);
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        togglePause();
+      }
+    });
+
+    document.getElementById('resumeButton').addEventListener('click', togglePause);
+    document.getElementById('restartButton').addEventListener('click', () => {
+      togglePause();
+      startGame();
+    });
+
+    document.getElementById('restartGameButton').addEventListener('click', () => {
+      gameOverScreen.style.display = 'none';
+      startGame();
+    });
+
+    backToDeckButton.addEventListener('click', backToDeckSelection);
+
+    function showUpgradeModal(tower) {
+      selectedTower = tower;
+      upgradeModal.style.display = 'block';
+      upgradeOptions.innerHTML = '';
+
+      const upgradeCost = Math.floor(tower.upgradeCost * 0.5);
+
+      const upgradeTypes = [
+        { name: 'Alcance', stat: 'range' },
+        { name: 'Dano', stat: 'damage' },
+        { name: 'Velocidade de Ataque', stat: 'speed' }
+      ];
+
+      upgradeTypes.forEach(upgrade => {
+        const option = document.createElement('div');
+        option.className = `upgrade-option${crystals >= upgradeCost ? '' : ' disabled'}`;
+        option.innerHTML = `Melhorar ${upgrade.name} (<span class="resource-icon crystal-icon"></span> ${upgradeCost})`;
+        option.onclick = () => {
+          if (selectedTower.upgrade(upgrade.stat)) {
+            updateResourceInfo();
+            showUpgradeModal(selectedTower);
+          }
+        };
+        upgradeOptions.appendChild(option);
+      });
+    }
+
+    function toggleSpeed() {
+      if (gameSpeed === 1) {
+        gameSpeed = 2;
+        speedToggle.textContent = '2x Velocidade';
+        speedToggle.classList.add('active');
+      } else {
+        gameSpeed = 1;
+        speedToggle.textContent = '1x Velocidade';
+        speedToggle.classList.remove('active');
+      }
+    }
+
+    function getTowerCost(towerType) {
+      switch (towerType) {
+        case 'basic':
+          return 50;
+        case 'rapid':
+          return 170;
+        case 'sniper':
+          return 250;
+        case 'ice':
+          return 180;
+        case 'laser':
+          return 360;
+        case 'cannon':
+          return 300;
+        case 'area':
+          return 120;
+        case 'chain':
+          return 150;
+        case 'bomb':
+          return 120;
+        case 'bazooka':
+          return 160;
+        case 'threeMages':
+          return 150;
+        case 'teleport':
+          return 250;
+        case 'combat':
+          return 250;
+        case 'mortar':
+          return 300;
+        case 'tesla':
+          return 250;
+        case 'superArrows':
+          return 170;
+        case 'clone':
+          return 250;
+        case 'goldCollector':
+          return 150;
+        case 'multiShot':
+          return 200;
+        case 'seismic':
+          return 220;
+        case 'repulsao':
+          return 280;
+        case 'wheeled':
+          return 200;
+        case 'fragmentation':
+          return 250;
+        case 'fire':
+          return 300;
+        case 'poison':
+          return 150;
+        default:
+          return 0;
+      }
+    }
+
+    generateWave();
+
+    gameLoop = setInterval(update, 1000 / 60);
+  </script>
+</body>
+</html>

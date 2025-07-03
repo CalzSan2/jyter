@@ -146,6 +146,45 @@
   }
   #controls {
     margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  #manaDisplay {
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #00ffff;
+    border-radius: 10px;
+    padding: 10px 15px;
+    font-size: 18px;
+    color: #00ffff;
+    text-shadow: 0 0 5px #00ffff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+
+  #manaDisplay::before {
+    content: "⚡";
+    font-size: 20px;
+  }
+
+  #manaBar {
+    height: 20px;
+    width: 150px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #00ffff;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-left: 10px;
+  }
+
+  #manaFill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #0066ff, #00ffff);
+    transition: width 0.3s ease;
   }
   button {
     font-size: 16px;
@@ -373,6 +412,12 @@
     </div>
     <canvas id="gameCanvas" width="1200" height="400"></canvas>
     <div id="controls">
+      <div id="manaDisplay">
+        <span id="manaText">100%</span>
+        <div id="manaBar">
+          <div id="manaFill"></div>
+        </div>
+      </div>
       <button id="backToDeckButton">Voltar ao Lobby</button>
     </div>
     <div id="gameMessage" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background-color: rgba(255,0,0,0.7); color: white; padding: 10px; border-radius: 5px; display: none; font-size: 16px;"></div>
@@ -2061,8 +2106,20 @@ spells.forEach(s => {
     }
 
     function updateResourceInfo() {
+      const manaPercentage = (mana / maxMana) * 100;
+      document.getElementById('manaText').textContent = `${mana.toFixed(1)}/${maxMana}`;
+      document.getElementById('manaFill').style.width = `${manaPercentage}%`;
+      
+      // Atualiza a cor da barra conforme a mana diminui
+      if (manaPercentage < 20) {
+        document.getElementById('manaFill').style.background = 'linear-gradient(90deg, #ff0000, #ff6600)';
+      } else if (manaPercentage < 50) {
+        document.getElementById('manaFill').style.background = 'linear-gradient(90deg, #ff6600, #ffff00)';
+      } else {
+        document.getElementById('manaFill').style.background = 'linear-gradient(90deg, #0066ff, #00ffff)';
+      }
+
       resourceInfoElement.innerHTML = `
-        <span class="resource-icon mana-icon">⚡ Mana:</span> ${mana.toFixed(1)}/${maxMana}
         <span class="resource-icon crystal-icon">💎</span> ${crystals}
         | ❤️ ${lives}
       `;

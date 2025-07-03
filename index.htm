@@ -1,6 +1,7 @@
 
 
 
+
 <html><head><base href="https://tower-defense.example.com/" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -370,7 +371,7 @@
       <div id="waveInfo"></div>
       <div id="resourceInfo"></div>
     </div>
-    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <canvas id="gameCanvas" width="1200" height="400"></canvas>
     <div id="controls">
       <button id="backToDeckButton">Voltar ao Lobby</button>
     </div>
@@ -707,12 +708,22 @@ spells.forEach(s => {
     let gameSpeed = 1;
 
     const enemyPath = [
-      { x: 0, y: 200 },
-      { x: 200, y: 200 },
-      { x: 200, y: 100 },
-      { x: 600, y: 100 },
-      { x: 600, y: 300 },
-      { x: 800, y: 300 }
+      { x: -50, y: 100 },
+      { x: 80, y: 100 },
+      { x: 80, y: 250 },
+      { x: 200, y: 250 },
+      { x: 200, y: 50 },
+      { x: 350, y: 50 },
+      { x: 350, y: 300 },
+      { x: 500, y: 300 },
+      { x: 500, y: 100 },
+      { x: 650, y: 100 },
+      { x: 650, y: 250 },
+      { x: 800, y: 250 },
+      { x: 800, y: 150 },
+      { x: 950, y: 150 },
+      { x: 950, y: 300 },
+      { x: 1100, y: 300 }
     ];
 
     function drawBackground() {
@@ -826,6 +837,7 @@ spells.forEach(s => {
           this.pathIndex++;
           if (this.pathIndex >= enemyPath.length) {
             lives--;
+            enemyPassedCastle();
             if (lives <= 0) {
               endGame();
             }
@@ -1829,6 +1841,28 @@ spells.forEach(s => {
       e.preventDefault();
     });
 
+    function isPositionOnPath(x, y) {
+      // Check if position is too close to path
+      const pathWidth = 30; // Width of the path
+      
+      for (let i = 0; i < enemyPath.length - 1; i++) {
+        const start = enemyPath[i];
+        const end = enemyPath[i+1];
+        
+        // Simple line segment distance check
+        const lineLength = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
+        const t = Math.max(0, Math.min(1, ((x - start.x) * (end.x - start.x) + (y - start.y) * (end.y - start.y)) / Math.pow(lineLength, 2)));
+        const projX = start.x + t * (end.x - start.x);
+        const projY = start.y + t * (end.y - start.y);
+        const dist = Math.sqrt(Math.pow(x - projX, 2) + Math.pow(y - projY, 2));
+        
+        if (dist < pathWidth) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     canvas.addEventListener('drop', (e) => {
       e.preventDefault();
       const rect = canvas.getBoundingClientRect();
@@ -1838,6 +1872,17 @@ spells.forEach(s => {
 
       const card = selectedDeck.find(c => c.type === cardType);
       if (!card) return;
+
+      // Check if position is on path
+      if (isPositionOnPath(x, y)) {
+        const message = document.getElementById('gameMessage');
+        message.textContent = 'Não pode colocar torres no caminho dos inimigos!';
+        message.style.display = 'block';
+        setTimeout(() => {
+          message.style.display = 'none';
+        }, 2000);
+        return;
+      }
 
       const manaCost = card.manaCost;
       if (card && mana >= manaCost) {
@@ -2048,6 +2093,12 @@ spells.forEach(s => {
         ctx.lineTo(enemyPath[i].x, enemyPath[i].y);
       }
       ctx.stroke();
+      
+      // Draw path leading to castle gate
+      ctx.beginPath();
+      ctx.moveTo(enemyPath[enemyPath.length-1].x, enemyPath[enemyPath.length-1].y);
+      ctx.lineTo(1100 + 100/2, 300); // Center of castle gate
+      ctx.stroke();
 
       ctx.strokeStyle = '#cc7700';
       ctx.lineWidth = 2;
@@ -2069,11 +2120,277 @@ spells.forEach(s => {
       }
     }
 
+    let castleParticles = [];
+    let castleShake = 0;
+    let lastEnemyPassedTime = 0;
+
+    function drawCastle() {
+      const castleX = 1100;
+      const castleY = 300;
+      const castleWidth = 200;
+      const castleHeight = 200;
+      
+      // Apply shake effect
+      const shakeX = castleShake > 0 ? (Math.random() - 0.5) * 10 : 0;
+      const shakeY = castleShake > 0 ? (Math.random() - 0.5) * 10 : 0;
+      
+      // Main castle structure with gradient
+      const gradient = ctx.createLinearGradient(castleX, castleY - castleHeight, castleX, castleY);
+      gradient.addColorStop(0, '#5D4037');
+      gradient.addColorStop(1, '#3E2723');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.moveTo(castleX + shakeX, castleY + shakeY);
+      ctx.lineTo(castleX + castleWidth + shakeX, castleY + shakeY);
+      ctx.lineTo(castleX + castleWidth + shakeX, castleY - castleHeight/2 + shakeY);
+      ctx.lineTo(castleX + castleWidth/2 + 30 + shakeX, castleY - castleHeight + shakeY);
+      ctx.lineTo(castleX + shakeX, castleY - castleHeight/2 + shakeY);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Castle towers with details
+      const towerGradient = ctx.createLinearGradient(0, 0, 0, 50);
+      towerGradient.addColorStop(0, '#8D6E63');
+      towerGradient.addColorStop(1, '#5D4037');
+      
+      // Left tower
+      ctx.save();
+      ctx.translate(castleX - 30 + shakeX, castleY - castleHeight - 50 + shakeY);
+      ctx.fillStyle = towerGradient;
+      ctx.beginPath();
+      ctx.arc(0, 0, 40, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#4E342E';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      
+      // Tower details
+      for (let i = 0; i < 8; i++) {
+        const angle = i * Math.PI/4;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(angle) * 30, Math.sin(angle) * 30);
+        ctx.lineTo(Math.cos(angle) * 40, Math.sin(angle) * 40);
+        ctx.strokeStyle = '#4E342E';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+      ctx.restore();
+      
+      // Right tower
+      ctx.save();
+      ctx.translate(castleX + castleWidth + 30 + shakeX, castleY - castleHeight - 50 + shakeY);
+      ctx.fillStyle = towerGradient;
+      ctx.beginPath();
+      ctx.arc(0, 0, 40, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#4E342E';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      
+      // Tower details
+      for (let i = 0; i < 8; i++) {
+        const angle = i * Math.PI/4;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(angle) * 30, Math.sin(angle) * 30);
+        ctx.lineTo(Math.cos(angle) * 40, Math.sin(angle) * 40);
+        ctx.strokeStyle = '#4E342E';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+      ctx.restore();
+      
+      // Center tower (bigger)
+      ctx.save();
+      ctx.translate(castleX + castleWidth/2 + shakeX, castleY - castleHeight - 80 + shakeY);
+      ctx.fillStyle = towerGradient;
+      ctx.beginPath();
+      ctx.arc(0, 0, 60, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#4E342E';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      
+      // Tower details
+      for (let i = 0; i < 12; i++) {
+        const angle = i * Math.PI/6;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(angle) * 45, Math.sin(angle) * 45);
+        ctx.lineTo(Math.cos(angle) * 60, Math.sin(angle) * 60);
+        ctx.strokeStyle = '#4E342E';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
+      
+      // Tower flag
+      ctx.fillStyle = '#D32F2F';
+      ctx.beginPath();
+      ctx.moveTo(0, -60);
+      ctx.lineTo(20, -80);
+      ctx.lineTo(40, -60);
+      ctx.lineTo(20, -40);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#B71C1C';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
+      // Flag details
+      ctx.fillStyle = '#FFEB3B';
+      ctx.beginPath();
+      ctx.arc(20, -60, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      
+      // Castle battlements with depth
+      ctx.fillStyle = '#6D4C41';
+      for (let i = 0; i < 8; i++) {
+        // Left side
+        ctx.beginPath();
+        ctx.moveTo(castleX + i*25 + shakeX, castleY - castleHeight/2 + shakeY);
+        ctx.lineTo(castleX + i*25 + 10 + shakeX, castleY - castleHeight/2 - 10 + shakeY);
+        ctx.lineTo(castleX + i*25 + 20 + shakeX, castleY - castleHeight/2 + shakeY);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Right side
+        ctx.beginPath();
+        ctx.moveTo(castleX + castleWidth - i*25 + shakeX, castleY - castleHeight/2 + shakeY);
+        ctx.lineTo(castleX + castleWidth - i*25 - 10 + shakeX, castleY - castleHeight/2 - 10 + shakeY);
+        ctx.lineTo(castleX + castleWidth - i*25 - 20 + shakeX, castleY - castleHeight/2 + shakeY);
+        ctx.closePath();
+        ctx.fill();
+      }
+      
+      // Castle gate with arch and details
+      ctx.save();
+      ctx.translate(castleX + castleWidth/2 + shakeX, castleY + shakeY);
+      
+      // Gate arch
+      ctx.fillStyle = '#4E342E';
+      ctx.beginPath();
+      ctx.arc(0, -40, 40, 0, Math.PI);
+      ctx.lineTo(-40, 0);
+      ctx.lineTo(40, 0);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Gate door
+      ctx.fillStyle = '#3E2723';
+      ctx.beginPath();
+      ctx.arc(0, -40, 30, 0, Math.PI);
+      ctx.lineTo(-30, 0);
+      ctx.lineTo(30, 0);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Door details
+      ctx.strokeStyle = '#5D4037';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(0, -20, 10, 0, Math.PI * 2);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(-15, -30);
+      ctx.lineTo(15, -30);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(-15, -10);
+      ctx.lineTo(15, -10);
+      ctx.stroke();
+      ctx.restore();
+      
+      // Windows with stained glass effect
+      const windowPositions = [
+        {x: castleX + 40, y: castleY - 100},
+        {x: castleX + castleWidth - 40, y: castleY - 100},
+        {x: castleX + castleWidth/2, y: castleY - 150}
+      ];
+      
+      windowPositions.forEach(pos => {
+        ctx.save();
+        ctx.translate(pos.x + shakeX, pos.y + shakeY);
+        
+        // Window frame
+        ctx.fillStyle = '#4E342E';
+        ctx.beginPath();
+        ctx.arc(0, 0, 15, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Stained glass
+        for (let i = 0; i < 8; i++) {
+          const angle = i * Math.PI/4;
+          ctx.fillStyle = `hsla(${i * 45}, 80%, 50%, 0.7)`;
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.arc(0, 0, 12, angle, angle + Math.PI/4);
+          ctx.closePath();
+          ctx.fill();
+        }
+        
+        // Window cross
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-12, 0);
+        ctx.lineTo(12, 0);
+        ctx.moveTo(0, -12);
+        ctx.lineTo(0, 12);
+        ctx.stroke();
+        ctx.restore();
+      });
+      
+      // Draw castle particles
+      castleParticles.forEach((p, i) => {
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        
+        p.x += p.vx;
+        p.y += p.vy;
+        p.size *= 0.95;
+        p.life--;
+        
+        if (p.life <= 0) {
+          castleParticles.splice(i, 1);
+        }
+      });
+      
+      // Reduce shake over time
+      if (castleShake > 0) {
+        castleShake--;
+      }
+    }
+
+    function enemyPassedCastle() {
+      const now = Date.now();
+      if (now - lastEnemyPassedTime > 1000) { // Only trigger once per second max
+        lastEnemyPassedTime = now;
+        castleShake = 20;
+        
+        // Create explosion particles
+        for (let i = 0; i < 50; i++) {
+          castleParticles.push({
+            x: 1100 + 100 + (Math.random() - 0.5) * 50,
+            y: 300 + (Math.random() - 0.5) * 50,
+            vx: (Math.random() - 0.5) * 5,
+            vy: (Math.random() - 0.5) * 5,
+            size: 5 + Math.random() * 10,
+            life: 30 + Math.random() * 30,
+            color: `hsla(${Math.random() * 30 + 10}, 100%, 50%, 0.8)`
+          });
+        }
+      }
+    }
+
     function update() {
       if (!isPaused) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         drawPath();
+        drawCastle();
         
         for (let i = 0; i < gameSpeed; i++) {
           spawnEnemy();

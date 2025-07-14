@@ -2,6 +2,7 @@
 
 
 
+
 <html><head><base href="https://tower-defense.example.com/" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -197,6 +198,15 @@
     text-shadow: 2px 2px #00ffff;
     transition: all 0.3s ease;
   }
+  
+  #removeTowerButton {
+    background-color: #ff0000;
+  }
+  
+  #removeTowerButton.active {
+    background-color: #ffff00;
+    box-shadow: 0 0 15px #ff0000;
+  }
   button:hover {
     background-color: #ffff00;
     box-shadow: 0 0 10px #00ffff;
@@ -249,6 +259,18 @@
   .tower-card-rarity.mitico { color: #e74c3c; }
   .tower-card-rarity.lendario { color: #f1c40f; }
   .tower-card-rarity.incomum { color: #2ecc71; }
+  .tower-card.selected {
+    box-shadow: 0 0 15px 5px rgba(255, 255, 0, 0.7);
+    animation: glow 1.5s ease-in-out infinite alternate;
+  }
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 10px 3px rgba(255, 255, 0, 0.7);
+    }
+    to {
+      box-shadow: 0 0 20px 8px rgba(255, 255, 0, 0.9);
+    }
+  }
   .tower-card-cost {
     font-size: 14px;
     color: #ff00ff;
@@ -418,6 +440,7 @@
           <div id="manaFill"></div>
         </div>
       </div>
+      <button id="removeTowerButton">Remover Torre (⚡3)</button>
       <button id="backToDeckButton">Voltar ao Lobby</button>
     </div>
     <div id="gameMessage" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background-color: rgba(255,0,0,0.7); color: white; padding: 10px; border-radius: 5px; display: none; font-size: 16px;"></div>
@@ -442,7 +465,7 @@
     let mana = 0;
     let maxMana = 10;
     let manaRegenRate = 0.01; // mana per frame (1x slower)
-    let maxTowers = 6;
+    let maxTowers = 7;
     let lastTowerIncrease = 0;
 
     let availableTowers = [
@@ -521,6 +544,11 @@ spells.forEach(s => {
           } else if (selectedDeck.length < 8) {
             selectedDeck.push(card);
             cardElement.classList.add('selected');
+            // Efeito visual ao selecionar
+            cardElement.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+              cardElement.style.transform = 'scale(1)';
+            }, 200);
           }
           updateSelectedDeckDisplay();
         });
@@ -736,6 +764,20 @@ spells.forEach(s => {
     const removeTowerButton = document.getElementById('removeTowerButton');
     let isPaused = false;
     let isRemovingTower = false;
+    
+    document.getElementById('removeTowerButton').addEventListener('click', () => {
+      if (mana >= 3) {
+        isRemovingTower = !isRemovingTower;
+        document.getElementById('removeTowerButton').classList.toggle('active', isRemovingTower);
+      } else {
+        const message = document.getElementById('gameMessage');
+        message.textContent = 'Mana insuficiente para remover torres!';
+        message.style.display = 'block';
+        setTimeout(() => {
+          message.style.display = 'none';
+        }, 2000);
+      }
+    });
 
     backgroundCanvas.width = window.innerWidth;
     backgroundCanvas.height = window.innerHeight;
@@ -1908,6 +1950,38 @@ spells.forEach(s => {
       return false;
     }
 
+    canvas.addEventListener('click', (e) => {
+      if (isRemovingTower) {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Find closest tower
+        let closestTower = null;
+        let minDistance = Infinity;
+        
+        towers.forEach(tower => {
+          const dx = tower.x - x;
+          const dy = tower.y - y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < minDistance && distance < 30) { // 30px click radius
+            minDistance = distance;
+            closestTower = tower;
+          }
+        });
+        
+        if (closestTower) {
+          towers = towers.filter(t => t !== closestTower);
+          mana -= 3;
+          updateResourceInfo();
+        }
+        
+        // Turn off removal mode after use
+        isRemovingTower = false;
+        document.getElementById('removeTowerButton').classList.remove('active');
+      }
+    });
+
     canvas.addEventListener('drop', (e) => {
       e.preventDefault();
       const rect = canvas.getBoundingClientRect();
@@ -1979,8 +2053,13 @@ spells.forEach(s => {
           }
         } else {
           if (towers.length >= maxTowers) {
-            // Remove a primeira torre antes de adicionar nova
-            towers.shift();
+            const message = document.getElementById('gameMessage');
+            message.textContent = 'Limite de 7 torres atingido!';
+            message.style.display = 'block';
+            setTimeout(() => {
+              message.style.display = 'none';
+            }, 2000);
+            return;
           }
           towers.push(new Tower(x, y, card.type));
           mana -= manaCost;
@@ -2474,11 +2553,6 @@ spells.forEach(s => {
             return !projectile.move();
           });
 
-          // Check if we need to increase max towers
-          if (wave - lastTowerIncrease >= 10) {
-            maxTowers++;
-            lastTowerIncrease = wave;
-          }
 
           if (enemies.length === 0 && enemiesSpawned >= waveEnemies.length) {
             generateWave();

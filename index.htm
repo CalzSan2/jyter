@@ -4,6 +4,7 @@
 
 
 
+
 <html><head><base href="https://tower-defense.example.com/" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -513,7 +514,8 @@
       { type: 'barreira', name: 'Barreira',  description: 'Cria uma barreira que bloqueia inimigos por 9s', rarity: 'raro' },
       { type: 'cemiterio', name: 'Cemitério Lendário',  description: 'Invoca 5 torres de flechas móveis por 9 segundos', rarity: 'lendario' },
       { type: 'terraqueimada', name: 'Terra Queimada',  description: 'Incendeia uma área causando dano contínuo por 10 segundos', rarity: 'epico' },
-      { type: 'tempestadeeletrica', name: 'Tempestade Elétrica',  description: 'Lança raios em até 5 inimigos aleatórios', rarity: 'epico' }
+      { type: 'tempestadeeletrica', name: 'Tempestade Elétrica',  description: 'Lança raios em até 5 inimigos aleatórios', rarity: 'epico' },
+      { type: 'clone', name: 'Clone',  description: 'Clona uma torre por 9 segundos (25% menos dano)', rarity: 'raro' }
     ];
 
 const manaCostsByRarity = {
@@ -2096,6 +2098,32 @@ spells.forEach(s => {
               message.style.display = 'none';
             }, 2000);
           }
+        } else if (card.type === 'clone') {
+          // Find closest tower to click position
+          let closestTower = null;
+          let minDistance = Infinity;
+          towers.forEach(tower => {
+            const dx = tower.x - x;
+            const dy = tower.y - y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < minDistance) {
+              minDistance = distance;
+              closestTower = tower;
+            }
+          });
+          
+          if (closestTower && minDistance < 100) { // 100px radius to select tower
+            castClone(closestTower);
+            mana -= manaCost;
+            updateResourceInfo();
+          } else {
+            const message = document.getElementById('gameMessage');
+            message.textContent = 'Nenhuma torre próxima encontrada!';
+            message.style.display = 'block';
+            setTimeout(() => {
+              message.style.display = 'none';
+            }, 2000);
+          }
         } else {
           if (towers.length >= maxTowers) {
             const message = document.getElementById('gameMessage');
@@ -3622,6 +3650,25 @@ spells.forEach(s => {
       }
 
       updateTempestade();
+    }
+
+    function castClone(tower) {
+      // Create a temporary clone of the tower with 25% less damage
+      const clone = new Tower(tower.x + 30, tower.y + 30, tower.type);
+      clone.damage = tower.damage * 0.75; // 25% less damage
+      clone.isCloned = true;
+      clone.pulsePhase = 0;
+      
+      // Add the clone to towers array
+      towers.push(clone);
+      
+      // Set timeout to remove the clone after 9 seconds
+      setTimeout(() => {
+        const index = towers.indexOf(clone);
+        if (index !== -1) {
+          towers.splice(index, 1);
+        }
+      }, 9000);
     }
 
     function castFuria(tower) {

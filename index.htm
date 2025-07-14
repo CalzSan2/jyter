@@ -3,6 +3,7 @@
 
 
 
+
 <html><head><base href="https://tower-defense.example.com/" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -150,6 +151,17 @@
     display: flex;
     align-items: center;
     gap: 20px;
+  }
+
+  #towerCounter {
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #00ff00;
+    border-radius: 10px;
+    padding: 10px 15px;
+    font-size: 18px;
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff00;
+    margin-right: 10px;
   }
 
   #manaDisplay {
@@ -434,6 +446,7 @@
     </div>
     <canvas id="gameCanvas" width="1200" height="400"></canvas>
     <div id="controls">
+      <div id="towerCounter">0/7</div>
       <div id="manaDisplay">
         <span id="manaText">100%</span>
         <div id="manaBar">
@@ -616,6 +629,7 @@ spells.forEach(s => {
     }
 
     function startGame() {
+      document.getElementById('towerCounter').textContent = `0/${maxTowers}`;
       clearInterval(gameLoop);
       enemies = [];
       towers = [];
@@ -1974,6 +1988,7 @@ spells.forEach(s => {
           towers = towers.filter(t => t !== closestTower);
           mana -= 3;
           updateResourceInfo();
+          document.getElementById('towerCounter').textContent = `${towers.length}/${maxTowers}`;
         }
         
         // Turn off removal mode after use
@@ -2005,6 +2020,16 @@ spells.forEach(s => {
 
       const manaCost = card.manaCost;
       if (card && mana >= manaCost) {
+        if (towers.length >= maxTowers) {
+          const message = document.getElementById('gameMessage');
+          message.textContent = 'Limite de 7 torres atingido!';
+          message.style.display = 'block';
+          setTimeout(() => {
+            message.style.display = 'none';
+          }, 2000);
+          return;
+        }
+        document.getElementById('towerCounter').textContent = `${towers.length + 1}/${maxTowers}`;
         if (card.type === 'tornado') {
           castTornado(x, y);
           mana -= manaCost;

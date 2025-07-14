@@ -509,7 +509,8 @@
       { type: 'blackhole', name: 'Buraco Negro',  description: 'Cria um buraco negro que suga e destrói inimigos', rarity: 'epico' },
       { type: 'vacuum', name: 'Vácuo',  description: 'Suga 99% da vida de inimigos próximos (exceto chefes)', rarity: 'epico' },
       { type: 'furia', name: 'Fúria',  description: 'Torre selecionada fica 3x mais rápida por 5s', rarity: 'raro' },
-      { type: 'meteor', name: 'Chuva de Meteoros',  description: 'Meteoros caem sobre até 5 inimigos, causando 50% de dano ao colidir', rarity: 'epico' }
+      { type: 'meteor', name: 'Chuva de Meteoros',  description: 'Meteoros caem sobre até 5 inimigos, causando 50% de dano ao colidir', rarity: 'epico' },
+      { type: 'barreira', name: 'Barreira',  description: 'Cria uma barreira que bloqueia inimigos por 9s', rarity: 'raro' }
     ];
 
 const manaCostsByRarity = {
@@ -2007,8 +2008,9 @@ spells.forEach(s => {
       const card = selectedDeck.find(c => c.type === cardType);
       if (!card) return;
 
-      // Check if position is on path
-      if (isPositionOnPath(x, y)) {
+      const manaCost = card.manaCost;
+      // Skip path check for spells (except towers)
+      if (!spells.some(s => s.type === card.type) && isPositionOnPath(x, y)) {
         const message = document.getElementById('gameMessage');
         message.textContent = 'Não pode colocar torres no caminho dos inimigos!';
         message.style.display = 'block';
@@ -2017,10 +2019,9 @@ spells.forEach(s => {
         }, 2000);
         return;
       }
-
-      const manaCost = card.manaCost;
       if (card && mana >= manaCost) {
-        if (towers.length >= maxTowers) {
+        // Only check tower limit for actual towers, not spells
+        if (!spells.some(s => s.type === card.type) && towers.length >= maxTowers) {
           const message = document.getElementById('gameMessage');
           message.textContent = 'Limite de 7 torres atingido!';
           message.style.display = 'block';
@@ -2048,6 +2049,10 @@ spells.forEach(s => {
           updateResourceInfo();
         } else if (card.type === 'meteor') {
           castMeteorShower(x, y);
+          mana -= manaCost;
+          updateResourceInfo();
+        } else if (card.type === 'barreira') {
+          castBarreira(x, y);
           mana -= manaCost;
           updateResourceInfo();
         } else if (card.type === 'furia') {
@@ -2099,6 +2104,80 @@ spells.forEach(s => {
         }, 2000);
       }
     });
+
+    function castBarreira(x, y) {
+      const barreiraRadius = 80;
+      const barreiraDuration = 540; // 9 segundos (60 FPS * 9)
+      let remainingDuration = barreiraDuration;
+      let barreiraActive = true;
+      let barreiraX = x;
+      let barreiraY = y;
+
+      function updateBarreira() {
+        if (!barreiraActive) return;
+
+        // Desenha a barreira
+        ctx.beginPath();
+        ctx.arc(barreiraX, barreiraY, barreiraRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(0, 255, 255, 0.7)';
+        ctx.lineWidth = 5;
+        ctx.stroke();
+        
+        // Desenha o preenchimento transparente
+        ctx.fillStyle = 'rgba(0, 100, 255, 0.2)';
+        ctx.fill();
+
+        // Desenha o contador de tempo
+        const secondsLeft = Math.ceil(remainingDuration / 60);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${secondsLeft}s`, barreiraX, barreiraY + 5);
+
+        // Bloqueia inimigos
+        enemies.forEach(enemy => {
+          const dx = enemy.x - barreiraX;
+          const dy = enemy.y - barreiraY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance <= barreiraRadius + enemy.size/2) {
+            // Empurra o inimigo para fora da barreira
+            const pushDistance = barreiraRadius + enemy.size/2;
+            const angle = Math.atan2(dy, dx);
+            enemy.x = barreiraX + Math.cos(angle) * pushDistance;
+            enemy.y = barreiraY + Math.sin(angle) * pushDistance;
+          }
+        });
+
+        remainingDuration--;
+        if (remainingDuration <= 0) {
+          barreiraActive = false;
+          // Efeito de desaparecimento
+          let fadeDuration = 30;
+          function fadeOut() {
+            if (fadeDuration <= 0) return;
+            
+            ctx.beginPath();
+            ctx.arc(barreiraX, barreiraY, barreiraRadius, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(0, 255, 255, ${fadeDuration/30 * 0.7})`;
+            ctx.lineWidth = 5;
+            ctx.stroke();
+            ctx.fillStyle = `rgba(0, 100, 255, ${fadeDuration/30 * 0.2})`;
+            ctx.fill();
+            
+            fadeDuration--;
+            if (fadeDuration > 0) {
+              requestAnimationFrame(fadeOut);
+            }
+          }
+          fadeOut();
+        } else {
+          requestAnimationFrame(updateBarreira);
+        }
+      }
+
+      updateBarreira();
+    }
 
     function castTornado(x, y) {
       const tornadoRadius = 100; // Smaller radius (2x smaller)

@@ -5,6 +5,18 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 <html><head><base href="https://tower-defense.example.com/" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -231,22 +243,43 @@
     margin-top: 20px;
   }
   .tower-card {
-    width: 120px;
-    height: 180px;
-    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-    border: 2px solid;
-    border-radius: 10px;
-    margin: 10px;
+    width: 180px;
+    height: 240px;
+    background: linear-gradient(145deg, #1a1a2a, #2a2a3a);
+    border: 3px solid;
+    border-radius: 15px;
+    margin: 15px;
     cursor: grab;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 255, 255, 0.1);
-    padding: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    padding: 15px;
     position: relative;
     overflow: hidden;
+  }
+
+  .tower-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    transform: rotate(45deg);
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+
+  .tower-card:hover::before {
+    opacity: 1;
+  }
+
+  .tower-card:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 12px 20px rgba(0, 255, 255, 0.2);
   }
   .tower-card.comum { border-color: white; }
   .tower-card.raro { border-color: #3498db; }
@@ -255,34 +288,96 @@
   .tower-card.lendario { border-color: #f1c40f; }
   .tower-card.incomum { border-color: #2ecc71; }
   .tower-card-name {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
-    color: #ffff00;
+    color: #ffffff;
     text-align: center;
+    margin-bottom: 8px;
+    text-shadow: 0 0 8px currentColor;
+    width: 100%;
+    padding: 5px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    word-break: break-word;
+    white-space: normal;
   }
+
   .tower-card-rarity {
     font-size: 12px;
     font-weight: bold;
     text-transform: uppercase;
-    margin-bottom: 5px;
+    letter-spacing: 1.5px;
+    padding: 5px 12px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    background: rgba(0,0,0,0.4);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
   }
-  .tower-card-rarity.comum { color: white; }
-  .tower-card-rarity.raro { color: #3498db; }
-  .tower-card-rarity.epico { color: #9b59b6; }
-  .tower-card-rarity.mitico { color: #e74c3c; }
-  .tower-card-rarity.lendario { color: #f1c40f; }
-  .tower-card-rarity.incomum { color: #2ecc71; }
+  .tower-card.comum { border-color: #cccccc; }
+  .tower-card.raro { border-color: #3498db; }
+  .tower-card.epico { border-color: #9b59b6; }
+  .tower-card.mitico { border-color: #e74c3c; }
+  .tower-card.lendario { border-color: #f1c40f; }
+  .tower-card.incomum { border-color: #2ecc71; }
+
+  .tower-card-rarity.comum { 
+    color: #ffffff;
+    background: linear-gradient(90deg, #555555, #888888);
+  }
+  .tower-card-rarity.raro { 
+    color: #ffffff;
+    background: linear-gradient(90deg, #2980b9, #3498db);
+  }
+  .tower-card-rarity.epico { 
+    color: #ffffff;
+    background: linear-gradient(90deg, #8e44ad, #9b59b6);
+  }
+  .tower-card-rarity.mitico { 
+    color: #ffffff;
+    background: linear-gradient(90deg, #c0392b, #e74c3c);
+  }
+  .tower-card-rarity.lendario { 
+    color: #000000;
+    background: linear-gradient(90deg, #f39c12, #f1c40f);
+  }
+  .tower-card-rarity.incomum { 
+    color: #ffffff;
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+  }
   .tower-card.selected {
-    box-shadow: 0 0 15px 5px rgba(255, 255, 0, 0.7);
+    box-shadow: 0 0 20px 8px rgba(255, 215, 0, 0.7);
     animation: glow 1.5s ease-in-out infinite alternate;
+    transform: translateY(-5px);
+    border-width: 4px;
   }
+
   @keyframes glow {
     from {
-      box-shadow: 0 0 10px 3px rgba(255, 255, 0, 0.7);
+      box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.6);
     }
     to {
-      box-shadow: 0 0 20px 8px rgba(255, 255, 0, 0.9);
+      box-shadow: 0 0 25px 10px rgba(255, 215, 0, 0.8);
     }
+  }
+
+  .tower-card.selected::after {
+    content: "✓";
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 25px;
+    height: 25px;
+    background: #00aa00;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
   }
   .tower-card-cost {
     font-size: 14px;
@@ -290,17 +385,53 @@
   }
   .tower-card-description {
     font-size: 12px;
-    color: #00ffff;
+    color: #bbbbff;
     text-align: center;
-    height: 60px;
-    overflow: hidden;
+    height: 90px;
+    overflow-y: auto;
+    margin: 10px 0;
+    padding: 5px;
+    line-height: 1.5;
+    text-shadow: 0 0 3px rgba(0,0,0,0.7);
+    scrollbar-width: thin;
+    scrollbar-color: #5555aa rgba(0,0,0,0.3);
   }
-  
-  .tower-card-mana-cost {
-    font-size: 12px;
+
+  .tower-card-description::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .tower-card-description::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.3);
+    border-radius: 5px;
+  }
+
+  .tower-card-description::-webkit-scrollbar-thumb {
+    background-color: #5555aa;
+    border-radius: 5px;
+  }
+
+  .tower-card-cost {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
     color: #ffff00;
-    text-align: center;
-    margin-top: 5px;
+    background: rgba(0,0,0,0.6);
+    padding: 8px 15px;
+    border-radius: 20px;
+    margin-top: auto;
+    width: 100%;
+    text-shadow: 0 0 5px rgba(255,255,0,0.7);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  }
+
+  .tower-card-cost::before {
+    content: "⚡";
+    margin-right: 8px;
+    font-size: 18px;
+    filter: drop-shadow(0 0 3px rgba(255,255,0,0.7));
   }
   #backgroundCanvas {
     position: absolute;
@@ -384,7 +515,18 @@
     <div class="spinner"></div>
   </div>
 
-  <div id="lobby" class="fullscreen">
+  <div id="warningScreen" class="fullscreen" style="background-color: rgba(0,0,0,0.9); text-align: center;">
+    <h1 style="color: red; font-size: 2.5rem; margin-bottom: 2rem;">AVISO IMPORTANTE</h1>
+    <p style="color: white; font-size: 1.5rem; max-width: 800px; margin: 0 auto 2rem;">
+      Este jogo é especialmente para PC.<br>
+      Para melhor jogabilidade, deixe o zoom em 90% e pressione F11 para tela cheia.
+    </p>
+    <button id="continueButton" style="font-size: 1.2rem; padding: 15px 30px; background-color: #00ff00; color: black; border: none; border-radius: 5px; cursor: pointer;">
+      Continuar para o Jogo
+    </button>
+  </div>
+
+  <div id="lobby" class="fullscreen" style="display: none;">
     <div class="lobby-container">
       <h1 class="game-title">Jyter <span class="version">0.4.8</span></h1>
       
@@ -490,22 +632,28 @@
       { type: 'cannon', name: 'Torre de Canhão',  description: 'Alcance longo, elimina inimigos comuns', rarity: 'mitico' },
       { type: 'area', name: 'Torre em Área',  description: 'Dano significativo em área', rarity: 'epico' },
       { type: 'chain', name: 'Torre de Corrente',  description: 'Desacelera inimigos progressivamente', rarity: 'incomum' },
+      { type: 'superChain', name: 'Torre de Corrente Evoluido', description: 'Correntes elétricas que saltam entre inimigos', rarity: 'lendario' },
       { type: 'bomb', name: 'Torre de Bombas',  description: 'Explode inimigos 3 vezes', rarity: 'epico' },
       { type: 'bazooka', name: 'Torre Hit Kill',  description: 'vazio roxo lento mais letal', rarity: 'comum' },
-      { type: 'threeMages', name: 'Os Três Magos',  description: 'Ataca com 3 projéteis em sequência', rarity: 'mitico' },
+      { type: 'threeMages', name: 'Super Os Três Magos',  description: 'Invoca 3 magos elementais que atacam simultaneamente com poderes de fogo, gelo e raio', rarity: 'lendario' },
       { type: 'teleport', name: 'Torre de Teletransporte',  description: 'Teleporta inimigos para o início', rarity: 'lendario' },
       { type: 'combat', name: 'Torre de Combate',  description: 'Alcance curto, atira com duas mãos', rarity: 'epico' },
       { type: 'mortar', name: 'Morteiro',  description: 'Alcance hiper gigante, tiro lento, dano alto', rarity: 'epico' },
+      { type: 'superMortar', name: 'Morteiro Evoluido', description: 'Alcance infinito, dano em massa  e slow', rarity: 'lendario' },
       { type: 'tesla', name: 'Torre Tesla',  description: 'Dano em área com raios de choque', rarity: 'epico' },
-      { type: 'superArrows', name: 'Torre de Super Flechas',  description: '3 torres em uma, alcance médio', rarity: 'epico' },
+      { type: 'superArrows', name: 'Torre de Flechas Evoluida',  description: '3 torres em uma, alcance médio', rarity: 'epico' },
       { type: 'multiShot', name: 'Torre Multitiro',  description: 'Atira em vários alvos simultaneamente', rarity: 'raro' },
       { type: 'seismic', name: 'Torre Sísmica',  description: 'Causa dano em área e atordoa', rarity: 'epico' },
       { type: 'repulsao', name: 'Torre de Repulsão',  description: 'Empurra inimigos para o começo a cada 10 segundos, afeta 1 inimigo', rarity: 'lendario' },
       { type: 'wheeled', name: 'Torre de Rodas',  description: 'Torre móvel que atira em movimento', rarity: 'epico' },
-      { type: 'fire', name: 'Torre de Fogo',  description: 'Dano em área, causando explosões em massa', rarity: 'epico' }
+      { type: 'fire', name: 'Torre de Fogo',  description: 'Dano em área, causando explosões em massa', rarity: 'epico' },
+      { type: 'boomerang', name: 'Torre ricochet',  description: 'Atira projétil que volta, acertando duas vezes', rarity: 'epico' },
+      { type: 'laser', name: 'Torre Laser', description: 'Dispara raio laser contínuo que frita inimigos', rarity: 'epico' }
     ];
 
     let spells = [
+      { type: 'superMeteor', name: 'Chuva de Meteoros Evoluida', description: 'Invoca meteoros gigantes que causam dano ', rarity: 'lendario' },
+      { type: 'superBarreira', name: 'Barreira Evoluida', description: 'Barreira duraçao 9 seg e da dano nos inimigos', rarity: 'lendario' },
       { type: 'tornado', name: 'Tornado',  description: 'Prende inimigos por 3s, tira metade da vida', rarity: 'incomum' },
       { type: 'blackhole', name: 'Buraco Negro',  description: 'Cria um buraco negro que suga e destrói inimigos', rarity: 'epico' },
       { type: 'vacuum', name: 'Vácuo',  description: 'Suga 99% da vida de inimigos próximos (exceto chefes)', rarity: 'epico' },
@@ -524,7 +672,8 @@ const manaCostsByRarity = {
   raro: 4,
   epico: 6,
   mitico: 7,
-  lendario: 8
+  lendario: 8,
+  superBarreira: 10  // Higher cost for super barrier
 };
 
 availableTowers.forEach(t => {
@@ -635,6 +784,7 @@ spells.forEach(s => {
     }
 
     function startGame() {
+      generateRandomPath(); // Gerar novo caminho aleatório
       document.getElementById('towerCounter').textContent = `0/${maxTowers}`;
       clearInterval(gameLoop);
       enemies = [];
@@ -698,8 +848,20 @@ spells.forEach(s => {
 
     setTimeout(() => {
       loadingScreen.style.display = 'none';
-      lobby.style.display = 'flex';
+      // Verifica se já foi mostrado antes
+      if (!localStorage.getItem('warningShown')) {
+        warningScreen.style.display = 'flex';
+        localStorage.setItem('warningShown', 'true');
+      } else {
+        lobby.style.display = 'flex';
+      }
     }, 3000);
+
+    document.getElementById('continueButton').addEventListener('click', () => {
+      document.getElementById('warningScreen').style.display = 'none';
+      lobby.style.display = 'flex';
+      localStorage.setItem('warningShown', 'true');
+    });
 
     document.getElementById('battleButton').addEventListener('click', () => {
       if (selectedDeck.length === 8) {
@@ -806,6 +968,7 @@ spells.forEach(s => {
     let enemies = [];
     let towers = [];
     let projectiles = [];
+    let towerParticles = [];
     let crystals = 0;
     let wave = 0;
     let waveEnemies = [];
@@ -814,24 +977,90 @@ spells.forEach(s => {
     let selectedTower = null;
     let gameSpeed = 1;
 
-    const enemyPath = [
-      { x: -50, y: 100 },
-      { x: 80, y: 100 },
-      { x: 80, y: 250 },
-      { x: 200, y: 250 },
-      { x: 200, y: 50 },
-      { x: 350, y: 50 },
-      { x: 350, y: 300 },
-      { x: 500, y: 300 },
-      { x: 500, y: 100 },
-      { x: 650, y: 100 },
-      { x: 650, y: 250 },
-      { x: 800, y: 250 },
-      { x: 800, y: 150 },
-      { x: 950, y: 150 },
-      { x: 950, y: 300 },
-      { x: 1100, y: 300 }
-    ];
+    let enemyPath = [];
+
+    function bezierPoint(a, b, c, d, t) {
+      const mt = 1 - t;
+      return mt*mt*mt*a + 3*mt*mt*t*b + 3*mt*t*t*c + t*t*t*d;
+    }
+
+    function generateRandomPath() {
+      enemyPath = [];
+      
+      // Define ponto inicial na esquerda
+      let startX = -50;
+      let startY = Math.random() * canvas.height * 0.8 + canvas.height * 0.1;
+      
+      enemyPath.push({ x: startX, y: startY });
+      
+      // Número de segmentos (mais segmentos = mais curvas)
+      const numSegments = 6 + Math.floor(Math.random() * 4);
+      const segmentLength = Math.min(canvas.width, canvas.height) * 0.8 / numSegments;
+      
+      // Pontos de controle para criar curvas suaves
+      let prevPoint = enemyPath[0];
+      let prevAngle = Math.random() * Math.PI * 0.5 - Math.PI * 0.25; // Ângulo inicial aleatório
+      
+      for (let i = 1; i <= numSegments; i++) {
+        // Variação de ângulo mais ampla para mudanças mais bruscas
+        const angleVariation = (Math.random() - 0.5) * Math.PI * 0.5;
+        prevAngle += angleVariation;
+        
+        // Distância do segmento com variação aleatória
+        const currentSegmentLength = segmentLength * (0.7 + Math.random() * 0.6);
+        
+        // Calcular ponto final baseado no ângulo
+        let endX = prevPoint.x + Math.cos(prevAngle) * currentSegmentLength;
+        let endY = prevPoint.y + Math.sin(prevAngle) * currentSegmentLength;
+        
+        // Garantir que o ponto fique dentro dos limites
+        endX = Math.max(50, Math.min(canvas.width - 50, endX));
+        endY = Math.max(50, Math.min(canvas.height - 50, endY));
+        
+        // Criar curva Bézier suave
+        const cpDistance = currentSegmentLength * 0.4;
+        const cp1x = prevPoint.x + Math.cos(prevAngle) * cpDistance;
+        const cp1y = prevPoint.y + Math.sin(prevAngle) * cpDistance;
+        
+        // Ponto de controle 2 na direção oposta
+        const cp2x = endX - Math.cos(prevAngle) * cpDistance;
+        const cp2y = endY - Math.sin(prevAngle) * cpDistance;
+        
+        // Gerar pontos ao longo da curva Bézier
+        const steps = 15;
+        for (let t = 0; t <= steps; t++) {
+          const tt = t / steps;
+          const x = bezierPoint(prevPoint.x, cp1x, cp2x, endX, tt);
+          const y = bezierPoint(prevPoint.y, cp1y, cp2y, endY, tt);
+          enemyPath.push({ x, y });
+        }
+        
+        prevPoint = { x: endX, y: endY };
+      }
+      
+      // Ponto final no castelo com curva suave
+      const lastPoint = enemyPath[enemyPath.length-1];
+      const cp1x = lastPoint.x + (1100 - lastPoint.x) * 0.3;
+      const cp1y = lastPoint.y + (300 - lastPoint.y) * 0.3;
+      const cp2x = lastPoint.x + (1100 - lastPoint.x) * 0.7;
+      const cp2y = lastPoint.y + (300 - lastPoint.y) * 0.7;
+      
+      const steps = 10;
+      for (let t = 1; t <= steps; t++) {
+        const tt = t / steps;
+        const x = bezierPoint(lastPoint.x, cp1x, cp2x, 1100, tt);
+        const y = bezierPoint(lastPoint.y, cp1y, cp2y, 300, tt);
+        enemyPath.push({ x, y });
+      }
+      
+      enemyPath.push({ x: 1100, y: 300 });
+      
+      // Função auxiliar para calcular ponto em curva Bézier
+      function bezierPoint(a, b, c, d, t) {
+        const mt = 1 - t;
+        return mt*mt*mt*a + 3*mt*mt*t*b + 3*mt*t*t*c + t*t*t*d;
+      }
+    }
 
     function drawBackground() {
       const gradient = bgCtx.createLinearGradient(0, 0, backgroundCanvas.width, backgroundCanvas.height);
@@ -1154,6 +1383,7 @@ spells.forEach(s => {
         this.originalX = x;
         this.originalY = y;
         this.targetEnemy = null;
+        this.duration = 3600; // 60 seconds at 60fps
         this.updateStats();
       }
 
@@ -1217,6 +1447,16 @@ spells.forEach(s => {
             this.cost = 150;
             this.color = '#808080';
             break;
+          case 'superChain':
+            this.range = 95;
+            this.damage = 3.33; // Reduced from 10 to 3.33 (3x less damage)
+            this.cooldown = 15;
+            this.cost = 350;
+            this.color = '#4169E1';
+            this.chainDamage = 0.5; // Dano reduzido a cada salto
+            this.maxJumps = 5; // Máximo de saltos entre inimigos
+            this.lightningParticles = [];
+            break;
           case 'bomb':
             this.range = 150;
             this.damage = 15;
@@ -1232,12 +1472,17 @@ spells.forEach(s => {
             this.color = '#8B0000';
             break;
           case 'threeMages':
-            this.range = 150;
-            this.damage = 7.5;
-            this.cooldown = 90;
-            this.cost = 150;
+            this.range = 180;
+            this.damage = 15; // Dano total combinado
+            this.cooldown = 60;
+            this.cost = 300;
             this.color = '#8A2BE2';
             this.mageIndex = 0;
+            this.elementalEffects = {
+              fire: { damage: 5, color: '#FF4500', effect: 'burn' },
+              ice: { damage: 5, color: '#00BFFF', effect: 'slow' },
+              lightning: { damage: 5, color: '#FFD700', effect: 'chain' }
+            };
             break;
           case 'teleport':
             this.range = 150;
@@ -1259,6 +1504,20 @@ spells.forEach(s => {
             this.cooldown = 180;
             this.cost = 300;
             this.color = '#8B4513';
+            this.barrelAngle = 0;
+            this.recoil = 0;
+            this.smokeParticles = [];
+            break;
+          case 'superMortar':
+            this.range = Math.max(canvas.width, canvas.height); // Alcance de tela toda
+            this.damage = 33; // Dano massivo
+            this.cooldown = 300; // Recarga muito lenta
+            this.cost = 500; // Custo alto
+            this.color = '#FF4500';
+            this.barrelAngle = 0;
+            this.recoil = 0;
+            this.smokeParticles = [];
+            this.explosionRadius = 60; // Raio grande da explosão
             break;
           case 'tesla':
             this.range = 130; // Increased range
@@ -1272,7 +1531,7 @@ spells.forEach(s => {
           case 'superArrows':
             this.range = 150;
             this.damage = 20;
-            this.cooldown = 270;
+            this.cooldown = 150;
             this.cost = 170;
             this.subTowers = [
               { x: this.x - 20, y: this.y - 20 },
@@ -1346,6 +1605,13 @@ spells.forEach(s => {
             this.cost = 150;
             this.color = '#8B008B';
             break;
+          case 'boomerang':
+            this.range = 150;
+            this.damage = 20;
+            this.cooldown = 90;
+            this.cost = 200;
+            this.color = '#00FF7F';
+            break;
         }
         this.cooldownRemaining = 0;
       }
@@ -1362,6 +1628,12 @@ spells.forEach(s => {
         if (this.cooldownRemaining > 0) {
           this.cooldownRemaining--;
           return false;
+        }
+
+        // Check tower duration
+        this.duration--;
+        if (this.duration <= 0) {
+          return 'remove'; // Signal to remove the tower
         }
 
         if (this.type === 'goldCollector') {
@@ -1421,12 +1693,26 @@ spells.forEach(s => {
               projectiles.push(new Projectile(this.x, this.y, targetEnemy, this.damage, this.type));
               break;
             case 'threeMages':
-              const angle = (this.mageIndex * 2 * Math.PI / 3);
-              const mageX = this.x + Math.cos(angle) * 15;
-              const mageY = this.y + Math.sin(angle) * 15;
-              projectiles.push(new Projectile(mageX, mageY, targetEnemy, this.damage, this.type));
-              this.mageIndex = (this.mageIndex + 1) % 3;
-              this.cooldownRemaining = this.cooldown / 3;
+              // Ataca com todos os 3 magos simultaneamente
+              for (let i = 0; i < 3; i++) {
+                const element = Object.keys(this.elementalEffects)[i];
+                const effect = this.elementalEffects[element];
+                const angle = (i * 2 * Math.PI / 3);
+                const mageX = this.x + Math.cos(angle) * 20;
+                const mageY = this.y + Math.sin(angle) * 20;
+                
+                const proj = new Projectile(mageX, mageY, targetEnemy, effect.damage, this.type);
+                proj.element = element;
+                proj.color = effect.color;
+                projectiles.push(proj);
+                
+                // Efeito visual dos magos
+                ctx.beginPath();
+                ctx.arc(mageX, mageY, 10, 0, Math.PI * 2);
+                ctx.fillStyle = effect.color;
+                ctx.fill();
+              }
+              this.cooldownRemaining = this.cooldown;
               break;
             case 'ice':
               targetEnemy.slowed = true;
@@ -1520,6 +1806,72 @@ spells.forEach(s => {
               ctx.stroke();
               ctx.setLineDash([]);
               break;
+            case 'superChain':
+              // Efeito de corrente elétrica que salta entre inimigos
+              let currentTarget = targetEnemy;
+              let currentDamage = this.damage;
+              let jumps = 0;
+              const hitEnemies = [currentTarget];
+              
+              // Criar partículas de raio
+              for (let i = 0; i < 10; i++) {
+                this.lightningParticles.push({
+                  x: this.x + (Math.random() - 0.5) * 10,
+                  y: this.y + (Math.random() - 0.5) * 10,
+                  size: 1 + Math.random() * 3,
+                  life: 10
+                });
+              }
+              
+              // Desenhar o primeiro raio
+              ctx.beginPath();
+              ctx.moveTo(this.x, this.y);
+              ctx.lineTo(currentTarget.x, currentTarget.y);
+              ctx.strokeStyle = '#4169E1';
+              ctx.lineWidth = 3;
+              ctx.shadowColor = '#ADD8E6';
+              ctx.shadowBlur = 10;
+              ctx.stroke();
+              ctx.shadowBlur = 0;
+              
+              // Aplicar dano ao primeiro alvo
+              currentTarget.health -= currentDamage;
+              currentTarget.speed *= 0.8; // Desaceleração mais forte
+              
+              // Efeito de impacto
+              ctx.beginPath();
+              ctx.arc(currentTarget.x, currentTarget.y, 10, 0, Math.PI * 2);
+              ctx.fillStyle = 'rgba(65, 105, 225, 0.5)';
+              ctx.fill();
+              
+              // Saltar para outros inimigos próximos
+              while (jumps < this.maxJumps) {
+                const nextTarget = enemies.find(enemy => 
+                  !hitEnemies.includes(enemy) && 
+                  Math.sqrt(Math.pow(enemy.x - currentTarget.x, 2) + Math.pow(enemy.y - currentTarget.y, 2)) < this.range
+                );
+                
+                if (!nextTarget) break;
+                
+                currentDamage *= this.chainDamage;
+                hitEnemies.push(nextTarget);
+                
+                // Desenhar raio entre alvos
+                ctx.beginPath();
+                ctx.moveTo(currentTarget.x, currentTarget.y);
+                ctx.lineTo(nextTarget.x, nextTarget.y);
+                ctx.strokeStyle = `rgba(65, 105, 225, ${1 - jumps * 0.15})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Aplicar dano e efeitos
+                nextTarget.health -= currentDamage;
+                nextTarget.speed *= 0.9;
+                
+                currentTarget = nextTarget;
+                jumps++;
+              }
+              break;
             case 'superArrows':
               this.subTowers.forEach(subTower => {
                 const subTargetEnemy = enemies.find(enemy => {
@@ -1534,7 +1886,48 @@ spells.forEach(s => {
               });
               break;
             case 'mortar':
+              // Calcular ângulo do canhão
+              this.barrelAngle = Math.atan2(targetEnemy.y - this.y, targetEnemy.x - this.x);
+              this.recoil = 10; // Efeito de recuo
+              
+              // Criar fumaça
+              for (let i = 0; i < 15; i++) {
+                this.smokeParticles.push({
+                  x: this.x,
+                  y: this.y,
+                  size: 5 + Math.random() * 10,
+                  life: 30 + Math.random() * 30,
+                  vx: (Math.random() - 0.5) * 2,
+                  vy: -Math.random() * 3,
+                  color: `rgba(150, 150, 150, ${0.3 + Math.random() * 0.3})`
+                });
+              }
+              
               projectiles.push(new Projectile(this.x, this.y, targetEnemy, this.damage, this.type));
+              break;
+            case 'superMortar':
+              this.barrelAngle = Math.atan2(targetEnemy.y - this.y, targetEnemy.x - this.x);
+              this.recoil = 15; // Recuo maior
+              
+              // Fumaça mais intensa
+              for (let i = 0; i < 30; i++) {
+                this.smokeParticles.push({
+                  x: this.x,
+                  y: this.y,
+                  size: 10 + Math.random() * 15,
+                  life: 45 + Math.random() * 30,
+                  vx: (Math.random() - 0.5) * 3,
+                  vy: -Math.random() * 4,
+                  color: `rgba(200, 100, 50, ${0.5 + Math.random() * 0.3})`
+                });
+              }
+              
+              // Projétil especial com efeito de slow
+              const proj = new Projectile(this.x, this.y, targetEnemy, this.damage, this.type);
+              proj.explosionRadius = this.explosionRadius;
+              proj.slowDuration = 60; // 1 segundo de slow (60 frames)
+              proj.slowFactor = 0.5; // Reduz velocidade pela metade
+              projectiles.push(proj);
               break;
             case 'multiShot':
               let targets = enemies.filter(enemy => {
@@ -1624,6 +2017,42 @@ spells.forEach(s => {
                 }
               }
               break;
+            case 'boomerang':
+              projectiles.push(new Projectile(this.x, this.y, targetEnemy, this.damage, this.type));
+              break;
+            case 'laser':
+              this.laserTarget = targetEnemy;
+              this.laserActive = true;
+              this.laserDamageAccumulator += this.damage;
+              
+              // Aplica dano acumulado a cada segundo
+              if (this.laserDamageAccumulator >= 30) {
+                targetEnemy.health -= this.laserDamageAccumulator;
+                this.laserDamageAccumulator = 0;
+                
+                // Efeito de queimadura
+                if (Math.random() < 0.1) {
+                  targetEnemy.health *= 0.95; // Remove 5% adicional da vida
+                }
+              }
+              
+              // Desenha o laser
+              ctx.beginPath();
+              ctx.moveTo(this.x, this.y);
+              ctx.lineTo(targetEnemy.x, targetEnemy.y);
+              ctx.strokeStyle = `rgba(255, 0, 0, 0.7)`;
+              ctx.lineWidth = 3;
+              ctx.shadowColor = 'rgba(255, 100, 100, 0.8)';
+              ctx.shadowBlur = 10;
+              ctx.stroke();
+              ctx.shadowBlur = 0;
+              
+              // Efeito de impacto
+              ctx.beginPath();
+              ctx.arc(targetEnemy.x, targetEnemy.y, 10, 0, Math.PI * 2);
+              ctx.fillStyle = 'rgba(255, 200, 0, 0.7)';
+              ctx.fill();
+              break;
           }
           return true;
         }
@@ -1639,12 +2068,48 @@ spells.forEach(s => {
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
         ctx.stroke();
 
+        // Draw tower with timer indicator
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, 20, 0, Math.PI * 2);
         ctx.fill();
 
+        // Draw timer ring with pulse effect when low
+        const timerAngle = (this.duration / 3600) * Math.PI * 2;
+        const isLowTime = this.duration < 300;
+        const pulse = isLowTime ? Math.sin(Date.now()/200) * 0.3 + 0.7 : 1;
+        
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 25, -Math.PI/2, -Math.PI/2 + timerAngle);
+        ctx.strokeStyle = this.duration > 600 ? '#00FF00' : 
+                         this.duration > 300 ? '#FFFF00' : '#FF0000';
+        ctx.lineWidth = isLowTime ? 4 : 3;
+        ctx.globalAlpha = pulse;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+
         switch(this.type) {
+          case 'laser':
+            // Base da torre
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 20, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Emissor laser
+            if (this.laserActive) {
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+              ctx.beginPath();
+              ctx.arc(this.x, this.y, 10, 0, Math.PI * 2);
+              ctx.fill();
+              
+              // Efeito de brilho
+              ctx.beginPath();
+              ctx.arc(this.x, this.y, 15, 0, Math.PI * 2);
+              ctx.fillStyle = 'rgba(255, 100, 100, 0.3)';
+              ctx.fill();
+            }
+            break;
           case 'superArrows':
             ctx.fillStyle = this.color;
             ctx.beginPath();
@@ -1661,18 +2126,65 @@ spells.forEach(s => {
             });
             break;
           case 'threeMages':
+            // Torre central
             ctx.fillStyle = this.color;
             ctx.beginPath();
             ctx.arc(this.x, this.y, 20, 0, Math.PI * 2);
             ctx.fill();
+            
+            // Desenha os três magos elementais com efeitos
             for (let i = 0; i < 3; i++) {
-              const angle = (i * 2 * Math.PI / 3) + (this.mageIndex * 2 * Math.PI / 3);
-              const mageX = this.x + Math.cos(angle) * 15;
-              const mageY = this.y + Math.sin(angle) * 15;
+              const element = Object.keys(this.elementalEffects)[i];
+              const effect = this.elementalEffects[element];
+              const angle = (i * 2 * Math.PI / 3) + Date.now()/1000;
+              const mageX = this.x + Math.cos(angle) * 25;
+              const mageY = this.y + Math.sin(angle) * 25;
+              
+              // Corpo do mago
               ctx.beginPath();
-              ctx.arc(mageX, mageY, 8, 0, Math.PI * 2);
-              ctx.fillStyle = ['#FF4500', '#4169E1', '#32CD32'][i];
+              ctx.arc(mageX, mageY, 12, 0, Math.PI * 2);
+              ctx.fillStyle = effect.color;
               ctx.fill();
+              
+              // Aura elemental
+              ctx.beginPath();
+              ctx.arc(mageX, mageY, 15 + Math.sin(Date.now()/200 + i) * 3, 0, Math.PI * 2);
+              ctx.strokeStyle = `rgba(255, 255, 255, 0.7)`;
+              ctx.lineWidth = 2;
+              ctx.stroke();
+              
+              // Efeitos especiais
+              if (element === 'fire') {
+                // Chamas
+                ctx.beginPath();
+                ctx.arc(mageX, mageY - 15, 8, 0, Math.PI);
+                ctx.fillStyle = '#FFA500';
+                ctx.fill();
+              } else if (element === 'ice') {
+                // Cristais de gelo
+                ctx.save();
+                ctx.translate(mageX, mageY - 15);
+                ctx.rotate(Date.now()/500);
+                for (let j = 0; j < 4; j++) {
+                  ctx.beginPath();
+                  ctx.moveTo(0, 0);
+                  ctx.lineTo(10, 0);
+                  ctx.strokeStyle = '#FFFFFF';
+                  ctx.lineWidth = 2;
+                  ctx.stroke();
+                  ctx.rotate(Math.PI/2);
+                }
+                ctx.restore();
+              } else if (element === 'lightning') {
+                // Raio pulsante
+                ctx.beginPath();
+                ctx.moveTo(mageX - 10, mageY - 15);
+                ctx.lineTo(mageX, mageY - 25);
+                ctx.lineTo(mageX + 10, mageY - 15);
+                ctx.strokeStyle = '#FFFF00';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+              }
             }
             break;
           case 'fragmentation':
@@ -1780,6 +2292,35 @@ spells.forEach(s => {
                 return false;
               }
               break;
+            case 'superMortar':
+              // Explosão grande com slow
+              for (let enemy of enemies) {
+                const dx = enemy.x - this.target.x;
+                const dy = enemy.y - this.target.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance <= this.explosionRadius) {
+                  enemy.health -= this.damage * (1 - distance/this.explosionRadius); // Dano reduzido com distância
+                  
+                  // Aplica slow
+                  if (this.slowDuration && this.slowFactor) {
+                    enemy.slowed = true;
+                    enemy.slowFactor = this.slowFactor;
+                    enemy.slowDuration = this.slowDuration;
+                  }
+                }
+              }
+              
+              // Efeito visual da explosão
+              ctx.beginPath();
+              ctx.arc(this.target.x, this.target.y, this.explosionRadius, 0, Math.PI * 2);
+              ctx.fillStyle = 'rgba(255, 100, 0, 0.3)';
+              ctx.fill();
+              ctx.strokeStyle = 'rgba(255, 200, 0, 0.7)';
+              ctx.lineWidth = 5;
+              ctx.stroke();
+              
+              return true;
             case 'fragmentation':
               this.target.health -= this.damage;
               for (let i = 0; i < 6; i++) {
@@ -1800,6 +2341,21 @@ spells.forEach(s => {
               }
               break;
             case 'fragment':
+              break;
+            case 'boomerang':
+              if (!this.secondHit) {
+                this.target.health -= this.damage;
+                // Find another enemy for ricochet
+                const otherEnemies = enemies.filter(e => e !== this.target && e.health > 0);
+                if (otherEnemies.length > 0) {
+                  this.secondHit = true;
+                  this.target = otherEnemies[Math.floor(Math.random() * otherEnemies.length)];
+                  this.damage *= 0.15; // 15% of original damage for second hit
+                  return false; // Don't remove projectile yet
+                }
+              } else {
+                this.target.health -= this.damage;
+              }
               break;
             default:
               this.target.health -= this.damage;
@@ -1875,13 +2431,45 @@ spells.forEach(s => {
             ctx.fill();
             break;
           case 'mortar':
-            ctx.fillStyle = '#8B4513';
+            // Corpo do projétil
+            const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 8);
+            gradient.addColorStop(0, '#B22222');
+            gradient.addColorStop(0.7, '#8B0000');
+            gradient.addColorStop(1, '#4B0000');
+            
+            ctx.fillStyle = gradient;
             ctx.beginPath();
             ctx.arc(0, 0, 8, 0, Math.PI * 2);
             ctx.fill();
-            ctx.strokeStyle = '#A0522D';
+            
+            // Detalhes do projétil
+            ctx.strokeStyle = '#4B0000';
             ctx.lineWidth = 2;
             ctx.stroke();
+            
+            // Aletas traseiras
+            ctx.fillStyle = '#8B4513';
+            for (let i = 0; i < 4; i++) {
+              const angle = i * Math.PI/2 + Date.now()/200;
+              ctx.save();
+              ctx.translate(Math.cos(angle) * 10, Math.sin(angle) * 10);
+              ctx.rotate(angle);
+              ctx.beginPath();
+              ctx.moveTo(0, 0);
+              ctx.lineTo(-5, -3);
+              ctx.lineTo(-5, 3);
+              ctx.closePath();
+              ctx.fill();
+              ctx.restore();
+            }
+            
+            // Rastro de fumaça
+            if (Math.random() < 0.3) {
+              ctx.beginPath();
+              ctx.arc(-15, 0, 3 + Math.random() * 2, 0, Math.PI * 2);
+              ctx.fillStyle = `rgba(150, 150, 150, ${0.5 + Math.random() * 0.3})`;
+              ctx.fill();
+            }
             break;
           case 'fragmentation':
             ctx.fillStyle = '#8B008B';
@@ -1901,6 +2489,18 @@ spells.forEach(s => {
             ctx.lineTo(6, -6);
             ctx.closePath();
             ctx.fill();
+            break;
+          case 'boomerang':
+            ctx.fillStyle = '#00FF7F';
+            ctx.beginPath();
+            ctx.moveTo(-8, -4);
+            ctx.lineTo(8, 0);
+            ctx.lineTo(-8, 4);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#006400';
+            ctx.lineWidth = 1;
+            ctx.stroke();
             break;
           default:
             ctx.fillStyle = this.getProjectileColor();
@@ -2052,6 +2652,10 @@ spells.forEach(s => {
           castSpacetime(x, y);
           mana -= manaCost;
           updateResourceInfo();
+        } else if (card.type === 'superMeteor') {
+          castSuperMeteor(x, y);
+          mana -= manaCost;
+          updateResourceInfo();
         } else if (card.type === 'meteor') {
           castMeteorShower(x, y);
           mana -= manaCost;
@@ -2070,6 +2674,10 @@ spells.forEach(s => {
           updateResourceInfo();
         } else if (card.type === 'tempestadeeletrica') {
           castTempestadeEletrica(x, y);
+          mana -= manaCost;
+          updateResourceInfo();
+        } else if (card.type === 'superBarreira') {
+          castSuperBarreira(x, y);
           mana -= manaCost;
           updateResourceInfo();
         } else if (card.type === 'furia') {
@@ -2314,42 +2922,152 @@ spells.forEach(s => {
     }
 
     function castBarreira(x, y) {
-      const barreiraRadius = 80;
+      const barreiraRadius = 100; // Raior maior
       const barreiraDuration = 540; // 9 segundos (60 FPS * 9)
       let remainingDuration = barreiraDuration;
       let barreiraActive = true;
       let barreiraX = x;
       let barreiraY = y;
+      const runes = [];
+      const particles = [];
+
+      // Criar runas mágicas
+      for (let i = 0; i < 8; i++) {
+        const angle = i * Math.PI/4;
+        runes.push({
+          x: x + Math.cos(angle) * barreiraRadius * 0.8,
+          y: y + Math.sin(angle) * barreiraRadius * 0.8,
+          angle: angle,
+          size: 15 + Math.random() * 10,
+          speed: 0.02 + Math.random() * 0.03,
+          char: String.fromCharCode(0x30 + Math.floor(Math.random() * 10)) // Símbolo aleatório
+        });
+      }
 
       function updateBarreira() {
         if (!barreiraActive) return;
 
-        // Desenha a barreira
+        // Fundo da barreira com gradiente
+        const gradient = ctx.createRadialGradient(
+          barreiraX, barreiraY, barreiraRadius * 0.3,
+          barreiraX, barreiraY, barreiraRadius
+        );
+        gradient.addColorStop(0, 'rgba(0, 150, 255, 0.3)');
+        gradient.addColorStop(1, 'rgba(0, 50, 150, 0.1)');
+        
         ctx.beginPath();
         ctx.arc(barreiraX, barreiraY, barreiraRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(0, 255, 255, 0.7)';
-        ctx.lineWidth = 5;
-        ctx.stroke();
-        
-        // Desenha o preenchimento transparente
-        ctx.fillStyle = 'rgba(0, 100, 255, 0.2)';
+        ctx.fillStyle = gradient;
         ctx.fill();
 
-        // Desenha o contador de tempo
+        // Borda da barreira com efeito pulsante
+        const pulse = Math.sin(Date.now() / 200) * 0.2 + 0.8;
+        ctx.beginPath();
+        ctx.arc(barreiraX, barreiraY, barreiraRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(0, 200, 255, ${0.7 * pulse})`;
+        ctx.lineWidth = 8;
+        ctx.shadowColor = 'rgba(0, 200, 255, 0.7)';
+        ctx.shadowBlur = 15;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Padrão geométrico interno
+        ctx.strokeStyle = `rgba(100, 200, 255, ${0.5 * pulse})`;
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 3; i++) {
+          const innerRadius = barreiraRadius * (0.3 + i * 0.2);
+          ctx.beginPath();
+          ctx.arc(barreiraX, barreiraY, innerRadius, 0, Math.PI * 2);
+          ctx.stroke();
+          
+          // Linhas radiais
+          for (let j = 0; j < 12; j++) {
+            const angle = j * Math.PI/6 + Date.now()/1000;
+            ctx.beginPath();
+            ctx.moveTo(barreiraX, barreiraY);
+            ctx.lineTo(
+              barreiraX + Math.cos(angle) * barreiraRadius,
+              barreiraY + Math.sin(angle) * barreiraRadius
+            );
+            ctx.stroke();
+          }
+        }
+
+        // Atualizar e desenhar runas
+        runes.forEach((rune, i) => {
+          rune.angle += rune.speed;
+          rune.x = barreiraX + Math.cos(rune.angle) * barreiraRadius * 0.8;
+          rune.y = barreiraY + Math.sin(rune.angle) * barreiraRadius * 0.8;
+          
+          ctx.save();
+          ctx.translate(rune.x, rune.y);
+          ctx.rotate(rune.angle + Math.PI/2);
+          ctx.fillStyle = `rgba(0, 200, 255, ${0.8 * pulse})`;
+          ctx.font = `${rune.size}px Arial`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(rune.char, 0, 0);
+          ctx.restore();
+        });
+
+        // Partículas flutuantes
+        if (Math.random() < 0.3) {
+          particles.push({
+            x: barreiraX + (Math.random() - 0.5) * barreiraRadius * 1.8,
+            y: barreiraY + (Math.random() - 0.5) * barreiraRadius * 1.8,
+            size: 2 + Math.random() * 4,
+            life: 60 + Math.random() * 60,
+            speed: 0.5 + Math.random(),
+            angle: Math.random() * Math.PI * 2
+          });
+        }
+
+        // Atualizar e desenhar partículas
+        particles.forEach((p, i) => {
+          p.x += Math.cos(p.angle) * p.speed;
+          p.y += Math.sin(p.angle) * p.speed;
+          p.life--;
+          p.size *= 0.99;
+          
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(100, 200, 255, ${p.life/120})`;
+          ctx.fill();
+          
+          if (p.life <= 0) {
+            particles.splice(i, 1);
+          }
+        });
+
+        // Contador de tempo estilizado
         const secondsLeft = Math.ceil(remainingDuration / 60);
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 16px Arial';
+        ctx.font = 'bold 20px "Press Start 2P"';
         ctx.textAlign = 'center';
-        ctx.fillText(`${secondsLeft}s`, barreiraX, barreiraY + 5);
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+        ctx.shadowBlur = 5;
+        ctx.fillText(`${secondsLeft}`, barreiraX, barreiraY + 8);
+        ctx.shadowBlur = 0;
 
-        // Bloqueia inimigos
+        // Bloqueia inimigos com efeito visual
         enemies.forEach(enemy => {
           const dx = enemy.x - barreiraX;
           const dy = enemy.y - barreiraY;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance <= barreiraRadius + enemy.size/2) {
-            // Empurra o inimigo para fora da barreira
+            // Efeito de impacto
+            ctx.beginPath();
+            ctx.moveTo(enemy.x, enemy.y);
+            ctx.lineTo(
+              barreiraX + (dx/distance) * barreiraRadius,
+              barreiraY + (dy/distance) * barreiraRadius
+            );
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Empurra o inimigo
             const pushDistance = barreiraRadius + enemy.size/2;
             const angle = Math.atan2(dy, dx);
             enemy.x = barreiraX + Math.cos(angle) * pushDistance;
@@ -2360,21 +3078,37 @@ spells.forEach(s => {
         remainingDuration--;
         if (remainingDuration <= 0) {
           barreiraActive = false;
-          // Efeito de desaparecimento
-          let fadeDuration = 30;
+          // Efeito de desaparecimento explosivo
+          for (let i = 0; i < 50; i++) {
+            particles.push({
+              x: barreiraX,
+              y: barreiraY,
+              size: 3 + Math.random() * 7,
+              life: 30 + Math.random() * 30,
+              speed: 1 + Math.random() * 3,
+              angle: Math.random() * Math.PI * 2
+            });
+          }
+          
           function fadeOut() {
-            if (fadeDuration <= 0) return;
+            // Atualizar partículas explosivas
+            particles.forEach((p, i) => {
+              p.x += Math.cos(p.angle) * p.speed;
+              p.y += Math.sin(p.angle) * p.speed;
+              p.life--;
+              p.size *= 0.95;
+              
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+              ctx.fillStyle = `rgba(100, 200, 255, ${p.life/60})`;
+              ctx.fill();
+              
+              if (p.life <= 0) {
+                particles.splice(i, 1);
+              }
+            });
             
-            ctx.beginPath();
-            ctx.arc(barreiraX, barreiraY, barreiraRadius, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(0, 255, 255, ${fadeDuration/30 * 0.7})`;
-            ctx.lineWidth = 5;
-            ctx.stroke();
-            ctx.fillStyle = `rgba(0, 100, 255, ${fadeDuration/30 * 0.2})`;
-            ctx.fill();
-            
-            fadeDuration--;
-            if (fadeDuration > 0) {
+            if (particles.length > 0) {
               requestAnimationFrame(fadeOut);
             }
           }
@@ -2851,7 +3585,26 @@ spells.forEach(s => {
 
           towers = towers.filter(tower => {
             const result = tower.attack(enemies);
+            
+            // Desativa laser se não há alvo
+            if (tower.type === 'laser' && !tower.laserTarget) {
+              tower.laserActive = false;
+              tower.laserDamageAccumulator = 0;
+            }
+            
             if (result === 'remove') {
+              // Criar partículas de explosão
+              for (let i = 0; i < 30; i++) {
+                towerParticles.push({
+                  x: tower.x + (Math.random() - 0.5) * 30,
+                  y: tower.y + (Math.random() - 0.5) * 30,
+                  vx: (Math.random() - 0.5) * 3,
+                  vy: (Math.random() - 0.5) * 3,
+                  size: 5 + Math.random() * 10,
+                  life: 30 + Math.random() * 30,
+                  color: tower.color
+                });
+              }
               return false;
             }
             return true;
@@ -2874,6 +3627,51 @@ spells.forEach(s => {
         enemies.forEach(enemy => enemy.draw());
         towers.forEach(tower => tower.draw());
         projectiles.forEach(projectile => projectile.draw());
+
+        // Atualizar e desenhar partículas de torres destruídas
+        towerParticles.forEach((p, i) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.size *= 0.95;
+          p.life--;
+          
+          // Efeito de brilho
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * 1.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${p.life/60 * 0.3})`;
+          ctx.fill();
+          
+          // Partícula principal
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          const gradient = ctx.createRadialGradient(
+            p.x, p.y, 0, 
+            p.x, p.y, p.size
+          );
+          gradient.addColorStop(0, p.color);
+          gradient.addColorStop(1, `rgba(${hexToRgb(p.color)}, ${p.life/60})`);
+          ctx.fillStyle = gradient;
+          ctx.fill();
+          ctx.restore();
+          
+          if (p.life <= 0) {
+            towerParticles.splice(i, 1);
+          }
+        });
+
+        // Função auxiliar para converter cor hex para rgb
+        function hexToRgb(hex) {
+          // Remove # se presente
+          hex = hex.replace('#', '');
+          
+          // Converte para valores R, G, B
+          const r = parseInt(hex.substring(0, 2), 16);
+          const g = parseInt(hex.substring(2, 4), 16);
+          const b = parseInt(hex.substring(4, 6), 16);
+          
+          return `${r}, ${g}, ${b}`;
+        }
 
         // Regenerate mana
         mana = Math.min(maxMana, mana + manaRegenRate);
@@ -3312,6 +4110,167 @@ spells.forEach(s => {
       }
     }
 
+    function castSuperMeteor(x, y) {
+      const meteorCount = 5; // Aumentei para 12 meteoros
+      const meteorSize = 35; // Meteoros ainda maiores
+      const blastRadius = 90; // Área de efeito maior
+      const damage = 70; // Dano aumentado
+      const meteors = [];
+      const explosions = [];
+
+      // Criar meteoros concentrados no ponto de clique
+      for (let i = 0; i < meteorCount; i++) {
+        meteors.push({
+          x: x + (Math.random() - 0.5) * 100, // Pequena variação horizontal
+          y: y - 500 - Math.random() * 200, // Começam mais acima
+          targetX: x + (Math.random() - 0.5) * 80, // Caem próximos ao ponto de clique
+          targetY: y + (Math.random() - 0.5) * 80,
+          size: meteorSize + Math.random() * 20,
+          speed: 8 + Math.random() * 4, // Velocidade aumentada
+          rotation: Math.random() * Math.PI * 2,
+          rotationSpeed: (Math.random() - 0.5) * 0.2,
+          trail: []
+        });
+      }
+
+      function updateSuperMeteor() {
+        // Atualizar e desenhar meteoros
+        meteors.forEach((meteor, mIndex) => {
+          // Mover meteoro em direção ao alvo
+          const dx = meteor.targetX - meteor.x;
+          const dy = meteor.targetY - meteor.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          if (dist < meteor.speed) {
+            // Criar explosão
+            explosions.push({
+              x: meteor.x,
+              y: meteor.y,
+              radius: blastRadius,
+              maxRadius: blastRadius,
+              life: 60,
+              damage: damage
+            });
+            
+            // Remover meteoro
+            meteors.splice(mIndex, 1);
+          } else {
+            meteor.x += dx / dist * meteor.speed;
+            meteor.y += dy / dist * meteor.speed;
+            meteor.rotation += meteor.rotationSpeed;
+            
+            // Adicionar partícula ao rastro
+            meteor.trail.push({
+              x: meteor.x,
+              y: meteor.y,
+              size: meteor.size * 0.7,
+              life: 20
+            });
+          }
+
+          // Desenhar meteoro
+          ctx.save();
+          ctx.translate(meteor.x, meteor.y);
+          ctx.rotate(meteor.rotation);
+          
+          // Corpo do meteoro com gradiente
+          const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, meteor.size);
+          gradient.addColorStop(0, '#FF4500');
+          gradient.addColorStop(0.7, '#B22222');
+          gradient.addColorStop(1, '#8B0000');
+          
+          ctx.beginPath();
+          ctx.arc(0, 0, meteor.size, 0, Math.PI * 2);
+          ctx.fillStyle = gradient;
+          ctx.fill();
+          
+          // Detalhes do meteoro
+          ctx.beginPath();
+          for (let i = 0; i < 8; i++) {
+            const angle = i * Math.PI/4;
+            const spikeLength = meteor.size * 1.5;
+            ctx.moveTo(0, 0);
+            ctx.lineTo(
+              Math.cos(angle) * spikeLength,
+              Math.sin(angle) * spikeLength
+            );
+          }
+          ctx.strokeStyle = 'rgba(255, 165, 0, 0.7)';
+          ctx.lineWidth = 3;
+          ctx.stroke();
+          
+          ctx.restore();
+
+          // Desenhar rastro
+          meteor.trail.forEach((particle, pIndex) => {
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 100, 0, ${particle.life/20})`;
+            ctx.fill();
+            
+            particle.size *= 0.95;
+            particle.life--;
+            
+            if (particle.life <= 0) {
+              meteor.trail.splice(pIndex, 1);
+            }
+          });
+        });
+
+        // Atualizar e desenhar explosões
+        explosions.forEach((explosion, eIndex) => {
+          // Efeito de expansão mais intenso
+          explosion.radius = explosion.maxRadius * (1 - explosion.life/60);
+          
+          // Gradiente da explosão mais vibrante
+          const gradient = ctx.createRadialGradient(
+            explosion.x, explosion.y, 0,
+            explosion.x, explosion.y, explosion.radius
+          );
+          gradient.addColorStop(0, 'rgba(255, 230, 0, 0.9)');
+          gradient.addColorStop(0.5, 'rgba(255, 100, 0, 0.7)');
+          gradient.addColorStop(0.8, 'rgba(200, 30, 0, 0.4)');
+          gradient.addColorStop(1, 'rgba(100, 0, 0, 0.1)');
+          
+          ctx.beginPath();
+          ctx.arc(explosion.x, explosion.y, explosion.radius, 0, Math.PI * 2);
+          ctx.fillStyle = gradient;
+          ctx.fill();
+          
+          // Efeito de onda de choque
+          ctx.beginPath();
+          ctx.arc(explosion.x, explosion.y, explosion.radius * 1.2, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(255, 255, 255, ${explosion.life/60 * 0.7})`;
+          ctx.lineWidth = 5;
+          ctx.stroke();
+          
+          // Aplicar dano aos inimigos uma vez
+          if (explosion.life === 60) {
+            enemies.forEach(enemy => {
+              const dx = enemy.x - explosion.x;
+              const dy = enemy.y - explosion.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              
+              if (dist < explosion.maxRadius) {
+                enemy.health -= explosion.damage * (1 - dist/explosion.maxRadius);
+              }
+            });
+          }
+          
+          explosion.life--;
+          if (explosion.life <= 0) {
+            explosions.splice(eIndex, 1);
+          }
+        });
+
+        if (meteors.length > 0 || explosions.length > 0) {
+          requestAnimationFrame(updateSuperMeteor);
+        }
+      }
+
+      updateSuperMeteor();
+    }
+
     function castMeteorShower(x, y) {
       // Get up to 5 random enemies
       const targets = [...enemies].filter(e => e.health > 0).slice(0, 5);
@@ -3545,79 +4504,399 @@ spells.forEach(s => {
       updateTerraQueimada();
     }
 
-    function castTempestadeEletrica(x, y) {
-      const maxTargets = 5;
-      const damage = 50;
-      const targets = [...enemies].filter(e => e.health > 0).slice(0, maxTargets);
-      
-      if (targets.length === 0) return;
-
+    function castSuperBarreira(x, y) {
+      const radius = 90; // Larger radius than normal barrier
+      const duration = 500; // 15 seconds (60fps * 15)
+      let remainingDuration = duration;
+      const runes = [];
       const particles = [];
-      const lightningPaths = [];
-      
-      // Create lightning paths to each target
-      targets.forEach(target => {
-        lightningPaths.push({
-          x1: x,
-          y1: y,
-          x2: target.x,
-          y2: target.y,
-          segments: [],
-          life: 30
-        });
-        
-        // Apply damage
-        target.health -= damage;
-        
-        // Create impact particles
-        for (let i = 0; i < 10; i++) {
-          particles.push({
-            x: target.x + (Math.random() - 0.5) * 20,
-            y: target.y + (Math.random() - 0.5) * 20,
-            vx: (Math.random() - 0.5) * 3,
-            vy: (Math.random() - 0.5) * 3,
-            size: 2 + Math.random() * 4,
-            life: 20 + Math.random() * 20,
-            color: `hsl(${200 + Math.random() * 40}, 100%, 70%)`
-          });
-        }
-      });
+      const damagePerSecond = 10;
+      const spikes = [];
 
-      // Generate jagged segments for lightning paths
-      lightningPaths.forEach(path => {
-        const segments = 8;
-        for (let i = 1; i <= segments; i++) {
-          const t = i / segments;
-          const offset = (i % 2 === 0 ? 1 : -1) * 15 * (1 - t);
-          path.segments.push({
-            x: path.x1 + (path.x2 - path.x1) * t + (Math.random() - 0.5) * offset,
-            y: path.y1 + (path.y2 - path.y1) * t + (Math.random() - 0.5) * offset
+      // Create spikes around the barrier
+      for (let i = 0; i < 12; i++) {
+        spikes.push({
+          angle: i * Math.PI/6,
+          length: 20 + Math.random() * 10,
+          width: 5 + Math.random() * 5,
+          pulse: Math.random() * Math.PI * 2
+        });
+      }
+
+      function updateSuperBarreira() {
+        if (remainingDuration <= 0) return;
+
+        // Draw barrier with pulsing effect
+        const pulse = Math.sin(Date.now()/200) * 0.2 + 0.8;
+        
+        // Outer glow
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 150, 255, 0.1)';
+        ctx.fill();
+
+        // Main barrier
+        const gradient = ctx.createRadialGradient(x, y, radius*0.7, x, y, radius);
+        gradient.addColorStop(0, 'rgba(0, 200, 255, 0.7)');
+        gradient.addColorStop(1, 'rgba(0, 100, 200, 0.3)');
+        
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        // Draw spikes
+        spikes.forEach(spike => {
+          const spikePulse = Math.sin(Date.now()/300 + spike.pulse) * 0.2 + 0.8;
+          const spikeLength = spike.length * spikePulse;
+          
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(spike.angle);
+          
+          // Draw spike with rotation animation
+          const rotationSpeed = 0.05;
+          const rotationAngle = Date.now() * rotationSpeed / 1000;
+          
+          ctx.save();
+          ctx.translate(radius + spikeLength/2, 0);
+          ctx.rotate(rotationAngle);
+          ctx.translate(-(radius + spikeLength/2), 0);
+          
+          ctx.beginPath();
+          ctx.moveTo(radius, 0);
+          ctx.lineTo(radius + spikeLength, -spike.width/2);
+          ctx.lineTo(radius + spikeLength, spike.width/2);
+          ctx.closePath();
+          
+          ctx.restore();
+          
+          const spikeGradient = ctx.createLinearGradient(radius, 0, radius + spikeLength, 0);
+          spikeGradient.addColorStop(0, 'rgba(0, 200, 255, 0.8)');
+          spikeGradient.addColorStop(1, 'rgba(0, 100, 200, 0.5)');
+          
+          ctx.fillStyle = spikeGradient;
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(0, 255, 255, 0.7)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          
+          ctx.restore();
+        });
+
+        // Barrier edge with pulse
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(0, 255, 255, ${0.7 * pulse})`;
+        ctx.lineWidth = 8;
+        ctx.shadowColor = 'rgba(0, 200, 255, 0.7)';
+        ctx.shadowBlur = 20;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Create magical runes
+        if (runes.length < 12) {
+          runes.push({
+            x: x + (Math.random() - 0.5) * radius * 1.5,
+            y: y + (Math.random() - 0.5) * radius * 1.5,
+            size: 15 + Math.random() * 15,
+            speed: 0.5 + Math.random(),
+            angle: Math.random() * Math.PI * 2,
+            char: String.fromCharCode(0x30 + Math.floor(Math.random() * 10))
           });
         }
-      });
+
+        // Update and draw runes
+        runes.forEach((rune, i) => {
+          rune.angle += 0.02;
+          rune.x += Math.cos(rune.angle) * rune.speed;
+          rune.y += Math.sin(rune.angle) * rune.speed;
+          
+          // Keep runes within barrier
+          const dx = rune.x - x;
+          const dy = rune.y - y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist > radius) {
+            rune.x = x + dx/dist * radius*0.9;
+            rune.y = y + dy/dist * radius*0.9;
+          }
+
+          ctx.save();
+          ctx.translate(rune.x, rune.y);
+          ctx.rotate(rune.angle);
+          ctx.fillStyle = `rgba(0, 255, 255, ${0.8 * pulse})`;
+          ctx.font = `${rune.size}px Arial`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(rune.char, 0, 0);
+          ctx.restore();
+        });
+
+        // Create particles
+        if (Math.random() < 0.3) {
+          particles.push({
+            x: x + (Math.random() - 0.5) * radius * 1.8,
+            y: y + (Math.random() - 0.5) * radius * 1.8,
+            size: 3 + Math.random() * 5,
+            life: 60 + Math.random() * 60,
+            speed: 0.5 + Math.random(),
+            angle: Math.random() * Math.PI * 2
+          });
+        }
+
+        // Update and draw particles
+        particles.forEach((p, i) => {
+          p.x += Math.cos(p.angle) * p.speed;
+          p.y += Math.sin(p.angle) * p.speed;
+          p.life--;
+          p.size *= 0.99;
+          
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(100, 200, 255, ${p.life/120})`;
+          ctx.fill();
+          
+          if (p.life <= 0) {
+            particles.splice(i, 1);
+          }
+        });
+
+        // Damage and repel enemies
+        enemies.forEach(enemy => {
+          const dx = enemy.x - x;
+          const dy = enemy.y - y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance <= radius + enemy.size/2) {
+            // Damage enemies inside barrier
+            enemy.health -= damagePerSecond / 60; // Damage per frame
+            
+            // Push enemies to edge of barrier
+            const pushDistance = radius + enemy.size/2;
+            const angle = Math.atan2(dy, dx);
+            enemy.x = x + Math.cos(angle) * pushDistance;
+            enemy.y = y + Math.sin(angle) * pushDistance;
+            
+            // Visual effect
+            ctx.beginPath();
+            ctx.moveTo(enemy.x, enemy.y);
+            ctx.lineTo(
+              x + (dx/distance) * radius,
+              y + (dy/distance) * radius
+            );
+            ctx.strokeStyle = 'rgba(255, 100, 100, 0.7)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          }
+        });
+
+        // Draw timer
+        const secondsLeft = Math.ceil(remainingDuration / 60);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 24px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+        ctx.shadowBlur = 5;
+        ctx.fillText(` ${secondsLeft}s`, x, y + radius + 30);
+        ctx.shadowBlur = 0;
+
+        remainingDuration--;
+        if (remainingDuration > 0) {
+          requestAnimationFrame(updateSuperBarreira);
+        } else {
+          // Explosion effect when barrier ends
+          for (let i = 0; i < 100; i++) {
+            particles.push({
+              x: x,
+              y: y,
+              size: 5 + Math.random() * 15,
+              life: 60 + Math.random() * 60,
+              speed: 1 + Math.random() * 4,
+              angle: Math.random() * Math.PI * 2
+            });
+          }
+        }
+      }
+
+      updateSuperBarreira();
+    }
+
+    function castTempestadeEletrica(x, y) {
+      const duration = 300; // 5 seconds
+      let remainingDuration = duration;
+      const stormRadius = 300; // Huge area of effect
+      const baseDamage = 100; // Massive base damage
+      const damagePerSecond = 30; // Continuous damage
+      const particles = [];
+      const clouds = [];
+      const lightningBolts = [];
+      
+      // Create storm clouds
+      for (let i = 0; i < 10; i++) {
+        clouds.push({
+          x: x + (Math.random() - 0.5) * stormRadius * 1.5,
+          y: y - 100 + (Math.random() - 0.5) * 50,
+          size: 50 + Math.random() * 100,
+          speed: 0.5 + Math.random(),
+          life: duration
+        });
+      }
 
       function updateTempestade() {
-        // Draw lightning paths
-        lightningPaths.forEach(path => {
-          ctx.beginPath();
-          ctx.moveTo(path.x1, path.y1);
+        if (remainingDuration <= 0) return;
+
+        // Draw dark storm background
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, stormRadius);
+        gradient.addColorStop(0, 'rgba(0, 0, 100, 0.8)');
+        gradient.addColorStop(1, 'rgba(0, 0, 50, 0.2)');
+        
+        ctx.beginPath();
+        ctx.arc(x, y, stormRadius, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        // Draw storm clouds
+        clouds.forEach(cloud => {
+          // Animate clouds
+          cloud.x += (Math.random() - 0.5) * cloud.speed;
+          cloud.y += (Math.random() - 0.1) * cloud.speed;
           
-          path.segments.forEach(segment => {
+          // Draw cloud with lightning effect
+          ctx.beginPath();
+          ctx.arc(cloud.x, cloud.y, cloud.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(50, 50, 100, ${0.5 + Math.random() * 0.3})`;
+          ctx.fill();
+          
+          // Lightning flash inside cloud
+          if (Math.random() < 0.1) {
+            ctx.beginPath();
+            ctx.arc(cloud.x, cloud.y, cloud.size * 0.8, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(200, 200, 255, 0.7)';
+            ctx.fill();
+          }
+        });
+
+        // Strike all enemies in radius every second
+        if (remainingDuration % 60 === 0) {
+          enemies.forEach(enemy => {
+            const dx = enemy.x - x;
+            const dy = enemy.y - y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance <= stormRadius) {
+              // Apply massive damage
+              enemy.health -= baseDamage * (1 - distance/stormRadius);
+              
+              // Create lightning bolt to enemy
+              const segments = 10;
+              const bolt = {
+                x1: x + (Math.random() - 0.5) * 50,
+                y1: y - 50,
+                x2: enemy.x,
+                y2: enemy.y,
+                segments: [],
+                life: 15,
+                color: `hsl(${200 + Math.random() * 40}, 100%, 70%)`
+              };
+              
+              // Generate jagged lightning path
+              for (let i = 1; i <= segments; i++) {
+                const t = i / segments;
+                const offset = (i % 2 === 0 ? 1 : -1) * 30 * (1 - t);
+                bolt.segments.push({
+                  x: bolt.x1 + (bolt.x2 - bolt.x1) * t + (Math.random() - 0.5) * offset,
+                  y: bolt.y1 + (bolt.y2 - bolt.y1) * t + (Math.random() - 0.5) * offset
+                });
+              }
+              
+              lightningBolts.push(bolt);
+              
+              // Create impact particles
+              for (let i = 0; i < 20; i++) {
+                particles.push({
+                  x: enemy.x + (Math.random() - 0.5) * 30,
+                  y: enemy.y + (Math.random() - 0.5) * 30,
+                  vx: (Math.random() - 0.5) * 5,
+                  vy: (Math.random() - 0.5) * 5,
+                  size: 3 + Math.random() * 7,
+                  life: 30 + Math.random() * 30,
+                  color: `hsl(${200 + Math.random() * 40}, 100%, 70%)`
+                });
+              }
+            }
+          });
+        }
+
+        // Apply continuous damage to all enemies in radius
+        enemies.forEach(enemy => {
+          const dx = enemy.x - x;
+          const dy = enemy.y - y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance <= stormRadius) {
+            enemy.health -= damagePerSecond / 60; // Damage per frame
+            
+            // Create small static electricity particles
+            if (Math.random() < 0.3) {
+              particles.push({
+                x: enemy.x + (Math.random() - 0.5) * 20,
+                y: enemy.y + (Math.random() - 0.5) * 20,
+                vx: (Math.random() - 0.5) * 2,
+                vy: (Math.random() - 0.5) * 2,
+                size: 1 + Math.random() * 3,
+                life: 10 + Math.random() * 20,
+                color: `hsl(${200 + Math.random() * 40}, 100%, 80%)`
+              });
+            }
+          }
+        });
+
+        // Draw and update lightning bolts
+        lightningBolts.forEach((bolt, i) => {
+          // Draw main lightning path
+          ctx.beginPath();
+          ctx.moveTo(bolt.x1, bolt.y1);
+          
+          bolt.segments.forEach(segment => {
             ctx.lineTo(segment.x, segment.y);
           });
           
-          ctx.lineTo(path.x2, path.y2);
-          ctx.strokeStyle = `rgba(100, 200, 255, ${path.life/30})`;
-          ctx.lineWidth = 3;
+          ctx.lineTo(bolt.x2, bolt.y2);
+          ctx.strokeStyle = bolt.color;
+          ctx.lineWidth = 5;
+          ctx.shadowColor = 'rgba(100, 200, 255, 0.8)';
+          ctx.shadowBlur = 10;
           ctx.stroke();
+          ctx.shadowBlur = 0;
+          
+          // Draw secondary smaller paths for more intensity
+          for (let j = 0; j < 3; j++) {
+            ctx.beginPath();
+            ctx.moveTo(bolt.x1 + (Math.random() - 0.5) * 10, bolt.y1 + (Math.random() - 0.5) * 10);
+            
+            bolt.segments.forEach(segment => {
+              ctx.lineTo(
+                segment.x + (Math.random() - 0.5) * 15,
+                segment.y + (Math.random() - 0.5) * 15
+              );
+            });
+            
+            ctx.lineTo(bolt.x2 + (Math.random() - 0.5) * 10, bolt.y2 + (Math.random() - 0.5) * 10);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${0.5 + Math.random() * 0.3})`;
+            ctx.lineWidth = 1 + Math.random() * 2;
+            ctx.stroke();
+          }
           
           // Draw impact glow
           ctx.beginPath();
-          ctx.arc(path.x2, path.y2, 15, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(100, 200, 255, ${path.life/60})`;
+          ctx.arc(bolt.x2, bolt.y2, 20, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(100, 200, 255, ${bolt.life/30})`;
           ctx.fill();
           
-          path.life--;
+          bolt.life--;
+          if (bolt.life <= 0) {
+            lightningBolts.splice(i, 1);
+          }
         });
 
         // Update and draw particles
@@ -3637,16 +4916,18 @@ spells.forEach(s => {
           }
         });
 
-        // Remove completed lightning paths
-        for (let i = lightningPaths.length - 1; i >= 0; i--) {
-          if (lightningPaths[i].life <= 0) {
-            lightningPaths.splice(i, 1);
-          }
-        }
+        // Draw storm countdown
+        const secondsLeft = Math.ceil(remainingDuration / 60);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 24px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+        ctx.shadowBlur = 5;
+        ctx.fillText(`SUPER TEMPESTADE ${secondsLeft}s`, x, y + stormRadius + 40);
+        ctx.shadowBlur = 0;
 
-        if (lightningPaths.length > 0 || particles.length > 0) {
-          requestAnimationFrame(updateTempestade);
-        }
+        remainingDuration--;
+        requestAnimationFrame(updateTempestade);
       }
 
       updateTempestade();
@@ -3721,4 +5002,4 @@ spells.forEach(s => {
     gameLoop = setInterval(update, 1000 / 60);
   </script>
 </body>
-</html>
+</html> 
